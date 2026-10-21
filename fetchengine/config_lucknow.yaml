@@ -1,0 +1,26 @@
+# ==============================================================================
+# Sentinel-1 Disaster Change Detection: Lucknow AOI Test
+# ==============================================================================
+name: "lucknow"
+event_date: "2026-10-01"
+
+# Bounding box in WGS84 (EPSG:4326)
+bbox: [80.85, 26.75, 81.05, 26.95]
+
+# Search windows
+pre_window_days: 15
+post_window_days: 15
+resolution_m: 20.0
+
+# Quality guardrails
+min_aoi_coverage_pct: 95.0     # Will automatically reject Orbit 92 (0.95% coverage)
+min_valid_pixel_pct: 90.0      # Enforces complete data integrity
+
+# Leave orbit filters unset to demonstrate automatic discovery & ranking
+# orbit_direction: "DESCENDING"
+# relative_orbit: 165
+
+# Change detection tuning
+threshold_method: "adaptive_std"
+k_std: 1.5
+min_area_m2: 2000.0

@@ -1,0 +1,173 @@
+{
+  "config": {
+    "name": "lucknow",
+    "event_date": "2026-10-01",
+    "bbox": [
+      80.85,
+      26.75,
+      81.05,
+      26.95
+    ],
+    "pre_window_days": 15,
+    "post_window_days": 15,
+    "resolution_m": 20.0,
+    "min_aoi_coverage_pct": 95.0,
+    "min_valid_pixel_pct": 90.0,
+    "threshold_method": "adaptive_std",
+    "k_std": 1.5,
+    "min_area_m2": 2000.0,
+    "center_lon": 80.95,
+    "center_lat": 26.85,
+    "utm_epsg": 32644,
+    "run_dir": "runs\\lucknow_2026-10-01",
+    "data_dir": "runs\\lucknow_2026-10-01\\data",
+    "previews_dir": "runs\\lucknow_2026-10-01\\previews"
+  },
+  "stage_1_catalog": {
+    "status": "COMPLETED",
+    "selected_pair": {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20260927T003547_20260927T003612_004756_008E87_9D45_COG.SAFE",
+        "datetime": "2026-09-27T00:35:47Z",
+        "coverage_pct": 100.0,
+        "gap_days": 3.98
+      },
+      "post_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20261009T003547_20261009T003612_004931_0094AF_7624_COG.SAFE",
+        "datetime": "2026-10-09T00:35:47Z",
+        "coverage_pct": 100.0,
+        "gap_days": 8.02
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_01"
+    },
+    "total_candidates": 2,
+    "candidates_file": "runs\\lucknow_2026-10-01\\candidates.json"
+  },
+  "stage_2_fetch": {
+    "status": "COMPLETED",
+    "utm_epsg": 32644,
+    "utm_bounds": [
+      485084.94,
+      2958745.94,
+      504971.68,
+      2980906.14
+    ],
+    "width_px": 994,
+    "height_px": 1108,
+    "effective_resolution_m": 20.0,
+    "pre_file": "runs\\lucknow_2026-10-01\\data\\pre_2026-09-27.tif",
+    "post_file": "runs\\lucknow_2026-10-01\\data\\post_2026-10-09.tif"
+  },
+  "stage_3_validate": {
+    "status": "PASSED",
+    "pre_stats": {
+      "file": "runs\\lucknow_2026-10-01\\data\\pre_2026-09-27.tif",
+      "file_size_mb": 7.725,
+      "width": 994,
+      "height": 1108,
+      "count": 2,
+      "crs": "EPSG:32644",
+      "transform": [
+        20.00678068410462,
+        0.0,
+        485084.94,
+        0.0,
+        -20.00018050541533,
+        2980906.14
+      ],
+      "bounds": [
+        485084.94,
+        2958745.94,
+        504971.68,
+        2980906.14
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 1101352,
+          "total_count": 1101352,
+          "valid_pct": 100.0,
+          "min": 0.0025397264398634434,
+          "max": 788.860107421875,
+          "mean": 0.7255098223686218,
+          "std": 3.4465744495391846
+        },
+        "VH": {
+          "valid_count": 1101352,
+          "total_count": 1101352,
+          "valid_pct": 100.0,
+          "min": 0.00010057176405098289,
+          "max": 55.536781311035156,
+          "mean": 0.08861764520406723,
+          "std": 0.22431516647338867
+        }
+      }
+    },
+    "post_stats": {
+      "file": "runs\\lucknow_2026-10-01\\data\\post_2026-10-09.tif",
+      "file_size_mb": 7.708,
+      "width": 994,
+      "height": 1108,
+      "count": 2,
+      "crs": "EPSG:32644",
+      "transform": [
+        20.00678068410462,
+        0.0,
+        485084.94,
+        0.0,
+        -20.00018050541533,
+        2980906.14
+      ],
+      "bounds": [
+        485084.94,
+        2958745.94,
+        504971.68,
+        2980906.14
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 1101352,
+          "total_count": 1101352,
+          "valid_pct": 100.0,
+          "min": 0.00022835691925138235,
+          "max": 735.2513427734375,
+          "mean": 0.2960372865200043,
+          "std": 1.3606622219085693
+        },
+        "VH": {
+          "valid_count": 1101352,
+          "total_count": 1101352,
+          "valid_pct": 100.0,
+          "min": 3.432399171288125e-05,
+          "max": 23.855173110961914,
+          "mean": 0.05114173889160156,
+          "std": 0.10221195966005325
+        }
+      }
+    },
+    "overlap_stats": {
+      "common_valid_pixels": 1101352,
+      "total_pixels": 1101352,
+      "common_valid_pct": 100.0
+    }
+  },
+  "stage_4_process": {
+    "status": "COMPLETED",
+    "change_mask_file": "runs\\lucknow_2026-10-01\\change_mask.tif",
+    "candidates_geojson": "runs\\lucknow_2026-10-01\\candidates.geojson",
+    "threshold_db": -6.0,
+    "threshold_method": "Adaptive (mean - 1.5*std) clamped: -6.00 dB (mean=-2.72, std=3.01)",
+    "permanent_water_pixels": 8816,
+    "candidate_polygon_count": 6170,
+    "total_candidate_area_ha": 3554.36,
+    "total_candidate_area_km2": 35.5436
+  },
+  "stage_5_visualize": {
+    "status": "COMPLETED",
+    "previews_directory": "runs\\lucknow_2026-10-01\\previews",
+    "summary_panel": "runs\\lucknow_2026-10-01\\previews\\summary_panel.png"
+  }
+}

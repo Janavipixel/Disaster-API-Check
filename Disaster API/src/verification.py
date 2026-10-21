@@ -16,6 +16,7 @@ from src.models import (
 )
 from src.query_parser import (
     DisasterQueryInfo,
+    STOPWORDS,
     classify_temporal_relation,
     parse_publication_date,
 )
@@ -227,16 +228,26 @@ def process_and_filter_results(
         # 3. Content Relevance Check
         title_lower = item.title.lower()
         content_lower = item.content.lower()
+        url_lower = (item.url or "").lower()
+        combined_text = f"{title_lower} {content_lower}"
+        text_with_url = f"{combined_text} {url_lower}"
 
         # Check if requested location or disaster type is mentioned
-        has_location = (
-            event_info.location is None
-            or event_info.location.lower() in title_lower
-            or event_info.location.lower() in content_lower
-        )
+        if event_info.location is None:
+            has_location = True
+        else:
+            loc_lower = event_info.location.strip().lower()
+            if loc_lower in text_with_url:
+                has_location = True
+            else:
+                loc_tokens = [
+                    tok for tok in re.split(r"[\s,\-/]+", loc_lower)
+                    if len(tok) >= 2 and tok not in STOPWORDS
+                ]
+                has_location = bool(loc_tokens and all(tok in text_with_url for tok in loc_tokens))
+
         d_type = (event_info.disaster_type or "").lower()
         d_root = d_type[:-1] if d_type.endswith("s") else d_type
-        combined_text = f"{title_lower} {content_lower}"
 
         has_disaster = (
             not d_type

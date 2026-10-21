@@ -456,6 +456,95 @@ class ReliefWebClient:
                 return None
             raise
 
+    def check_health(self) -> Dict[str, Any]:
+        """
+        Actively verifies ReliefWeb API connectivity, approved appname acceptance,
+        and response structure. Does NOT report success based only on variable presence.
+        """
+        if not self.config.is_configured:
+            return {
+                "status": "unconfigured",
+                "configured": False,
+                "available": False,
+                "api_verified": False,
+                "message": "RELIEFWEB_APPNAME not configured (approved appname required by ReliefWeb API v2)",
+            }
+
+        url = f"{self.config.base_url.rstrip('/')}?appname={urllib.parse.quote_plus(self.config.appname)}&limit=1"
+        headers = {
+            "User-Agent": self.config.user_agent,
+            "Accept": "application/json",
+        }
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=min(self.timeout, 10)) as resp:
+                status_code = resp.status
+                raw_bytes = resp.read()
+
+            if status_code != 200:
+                return {
+                    "status": "error",
+                    "configured": True,
+                    "available": False,
+                    "api_verified": False,
+                    "http_status": status_code,
+                    "message": f"ReliefWeb API returned HTTP {status_code}",
+                }
+
+            data = json.loads(raw_bytes.decode("utf-8", errors="replace"))
+            total_count = data.get("totalCount")
+            if not isinstance(total_count, int) or "data" not in data:
+                return {
+                    "status": "degraded",
+                    "configured": True,
+                    "available": False,
+                    "api_verified": False,
+                    "http_status": status_code,
+                    "message": "ReliefWeb API returned malformed or unexpected response structure",
+                }
+
+            return {
+                "status": "healthy",
+                "configured": True,
+                "available": True,
+                "api_verified": True,
+                "http_status": 200,
+                "total_reports": total_count,
+                "message": f"ReliefWeb API v2 verified (approved appname accepted; {total_count:,} reports available)",
+            }
+
+        except urllib.error.HTTPError as http_err:
+            code = http_err.code
+            err_msg = ""
+            try:
+                err_msg = http_err.read().decode("utf-8", errors="replace")
+            except Exception:
+                pass
+            return {
+                "status": "error" if code == 403 else "degraded",
+                "configured": True,
+                "available": False,
+                "api_verified": False,
+                "http_status": code,
+                "message": f"ReliefWeb API HTTP {code} Forbidden: appname rejected" if code == 403 else f"ReliefWeb API HTTP {code}: {err_msg[:120]}",
+            }
+        except (socket.timeout, TimeoutError):
+            return {
+                "status": "degraded",
+                "configured": True,
+                "available": False,
+                "api_verified": False,
+                "message": "ReliefWeb API request timed out",
+            }
+        except Exception as exc:
+            return {
+                "status": "degraded",
+                "configured": True,
+                "available": False,
+                "api_verified": False,
+                "message": f"ReliefWeb API connection failed: {exc}",
+            }
+
     # --------------------------------------------------------------------------
     # Internal Helpers
     # --------------------------------------------------------------------------

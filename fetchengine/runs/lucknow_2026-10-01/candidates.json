@@ -1,0 +1,97 @@
+{
+  "candidate_pairs": [
+    {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20260927T003547_20260927T003612_004756_008E87_9D45_COG.SAFE",
+        "datetime": "2026-09-27T00:35:47Z",
+        "coverage_pct": 100.0,
+        "gap_days": 3.98
+      },
+      "post_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20261009T003547_20261009T003612_004931_0094AF_7624_COG.SAFE",
+        "datetime": "2026-10-09T00:35:47Z",
+        "coverage_pct": 100.0,
+        "gap_days": 8.02
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_01"
+    },
+    {
+      "relative_orbit": 56,
+      "orbit_direction": "ASCENDING",
+      "pre_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20260919T123744_20260919T123814_004647_008ACA_F0EB_COG.SAFE",
+        "datetime": "2026-09-19T12:37:44Z",
+        "coverage_pct": 100.0,
+        "gap_days": 11.47
+      },
+      "post_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20261001T123745_20261001T123814_004822_0090E0_0A05_COG.SAFE",
+        "datetime": "2026-10-01T12:37:45Z",
+        "coverage_pct": 100.0,
+        "gap_days": 0.53
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_02"
+    }
+  ],
+  "rejected_groups": [
+    {
+      "relative_orbit": 92,
+      "orbit_direction": "DESCENDING",
+      "pre_count": 1,
+      "post_count": 1,
+      "max_pre_coverage": 0.98,
+      "max_post_coverage": 0.95,
+      "reason": "Coverage below 95.0% (Pre max: 0.98%, Post max: 0.95%)"
+    }
+  ],
+  "all_scenes": [
+    {
+      "id": "S1D_IW_GRDH_1SDV_20261009T003547_20261009T003612_004931_0094AF_7624_COG.SAFE",
+      "datetime": "2026-10-09T00:35:47Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20261004T002741_20261004T002806_004858_00921F_F481_COG.SAFE",
+      "datetime": "2026-10-04T00:27:41Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 92,
+      "coverage_pct": 0.95
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20261001T123745_20261001T123814_004822_0090E0_0A05_COG.SAFE",
+      "datetime": "2026-10-01T12:37:45Z",
+      "orbit_direction": "ASCENDING",
+      "relative_orbit": 56,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20260927T003547_20260927T003612_004756_008E87_9D45_COG.SAFE",
+      "datetime": "2026-09-27T00:35:47Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20260922T002741_20260922T002806_004683_008C06_19EF_COG.SAFE",
+      "datetime": "2026-09-22T00:27:41Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 92,
+      "coverage_pct": 0.98
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20260919T123744_20260919T123814_004647_008ACA_F0EB_COG.SAFE",
+      "datetime": "2026-09-19T12:37:44Z",
+      "orbit_direction": "ASCENDING",
+      "relative_orbit": 56,
+      "coverage_pct": 100.0
+    }
+  ]
+}

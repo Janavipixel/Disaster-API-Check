@@ -1,62 +1,29 @@
-# Environment variables and secrets
+# Environment files and credentials
 .env
 .env.*
 !.env.example
 
-# Python bytecode and cache
+# Python cache and bytecode
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Distribution / packaging
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-.venv/
-env/
-ENV/
-
-# Testing & coverage
 .pytest_cache/
 .coverage
 htmlcov/
 
-# IDEs & OS files
+# Node and frontend build artifacts
+node_modules/
+dist/
+
+# Temporary test runs and isolated test configs
+fetchengine/runs/*test*/
+fetchengine/config_test.yaml
+
+# IDE and OS files
 .vscode/
 .idea/
-*.swp
-*.swo
 .DS_Store
 Thumbs.db
-
-# Secrets & Certificates
-*.pem
-*.key
-*.cert
-*.crt
-*.pfx
-*.p12
-
-# Logs & Temporary files
 *.log
 *.tmp
-
-# Nested cloned check folder
-Disaster-APU-Check/
-

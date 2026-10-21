@@ -1,0 +1,33 @@
+# ==============================================================================
+# Sentinel-1 Disaster Change Detection Configuration
+# ==============================================================================
+# Run identifier and target event
+name: "kerala"
+event_date: "2018-08-10"
+
+# Area of Interest (AOI):
+# Option A: Explicit bounding box [west, south, east, north] in WGS84 (EPSG:4326)
+bbox: [76.2, 9.8, 76.6, 10.2]
+
+# Option B: Center coordinate and extent in km (uncomment to use instead of bbox)
+# center_lat: 10.0
+# center_lon: 76.4
+# size_km: 44.0
+
+# Search parameters
+pre_window_days: 20
+post_window_days: 20
+resolution_m: 20.0
+
+# Quality and coverage guardrails
+min_aoi_coverage_pct: 95.0     # Rejects clipped swaths (prevents the orbit 92 coverage issue)
+min_valid_pixel_pct: 90.0      # Fails loudly if valid-data coverage is below 90%
+
+# Optional orbit filters (omit or comment out to auto-discover and rank all orbits)
+orbit_direction: "DESCENDING"
+relative_orbit: 165
+
+# Change detection tuning
+threshold_method: "adaptive_std" # 'adaptive_std' or 'otsu'
+k_std: 1.5                      # Multiplier for adaptive threshold: mean - k*std
+min_area_m2: 2000.0             # Minimum cluster area for vector polygon candidates

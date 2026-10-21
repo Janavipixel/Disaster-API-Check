@@ -34,7 +34,7 @@ from src.clients.reliefweb_client import (
     ReliefWebParsingError,
     ReliefWebTimeoutError,
 )
-from src.config import ReliefWebConfig
+from src.config import ConfigurationError, ReliefWebConfig
 from src.models import ReliefWebReport, ReliefWebQueryResponse
 
 
@@ -409,3 +409,108 @@ def test_sample_kerala_floods_payload():
     pdna_rep = response.reports[2]
     assert "Post Disaster Needs Assessment" in pdna_rep.title
     assert "Government of Kerala" in pdna_rep.sources
+
+
+# ------------------------------------------------------------------------------
+# 7. Health Check & Validation Tests
+# ------------------------------------------------------------------------------
+def test_reliefweb_config_validation():
+    """Verify ReliefWebConfig.validate() and is_configured property."""
+    cfg_empty = ReliefWebConfig(appname="")
+    assert cfg_empty.is_configured is False
+    with pytest.raises(ConfigurationError) as exc_empty:
+        cfg_empty.validate()
+    assert "ReliefWeb appname is missing" in str(exc_empty.value)
+
+    cfg_placeholder = ReliefWebConfig(appname="your-reliefweb-appname-here")
+    assert cfg_placeholder.is_configured is False
+    with pytest.raises(ConfigurationError) as exc_ph:
+        cfg_placeholder.validate()
+    assert "placeholder" in str(exc_ph.value)
+
+    cfg_valid = ReliefWebConfig(appname="MyApprovedApp-123")
+    assert cfg_valid.is_configured is True
+    cfg_valid.validate()  # Does not raise
+
+
+def test_reliefweb_check_health_unconfigured():
+    """Verify check_health reports unconfigured when appname is absent."""
+    client = ReliefWebClient(config=ReliefWebConfig(appname=""))
+    res = client.check_health()
+    assert res["status"] == "unconfigured"
+    assert res["configured"] is False
+    assert res["available"] is False
+    assert res["api_verified"] is False
+    assert "RELIEFWEB_APPNAME not configured" in res["message"]
+
+
+def test_reliefweb_check_health_healthy():
+    """Verify check_health performs a real request and reports healthy on HTTP 200 with reports."""
+    client = ReliefWebClient(config=ReliefWebConfig(appname="ValidApp-123"))
+    mock_payload = {
+        "time": 10,
+        "totalCount": 1100000,
+        "count": 1,
+        "data": [{"id": "1", "fields": {"title": "Test Report"}}],
+    }
+    mock_resp = io.BytesIO(json.dumps(mock_payload).encode("utf-8"))
+    mock_resp.status = 200
+
+    with patch("urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        res = client.check_health()
+        assert res["status"] == "healthy"
+        assert res["configured"] is True
+        assert res["available"] is True
+        assert res["api_verified"] is True
+        assert res["http_status"] == 200
+        assert res["total_reports"] == 1100000
+        assert "verified" in res["message"]
+        mock_urlopen.assert_called_once()
+        called_url = mock_urlopen.call_args[0][0].full_url
+        assert "appname=ValidApp-123" in called_url
+
+
+def test_reliefweb_check_health_forbidden_403():
+    """Verify check_health reports error and unapproved appname on HTTP 403."""
+    client = ReliefWebClient(config=ReliefWebConfig(appname="RejectedApp-999"))
+    http_error = urllib.error.HTTPError(
+        url="https://api.reliefweb.int/v2/reports?appname=RejectedApp-999&limit=1",
+        code=403,
+        msg="Forbidden",
+        hdrs={},
+        fp=io.BytesIO(b'{"status":403,"error":{"message":"You are not using an approved appname."}}'),
+    )
+
+    with patch("urllib.request.urlopen", side_effect=http_error):
+        res = client.check_health()
+        assert res["status"] == "error"
+        assert res["configured"] is True
+        assert res["available"] is False
+        assert res["api_verified"] is False
+        assert res["http_status"] == 403
+        assert "HTTP 403 Forbidden" in res["message"]
+
+
+def test_reliefweb_check_health_malformed_json():
+    """Verify check_health handles malformed API response gracefully."""
+    client = ReliefWebClient(config=ReliefWebConfig(appname="ValidApp-123"))
+    mock_resp = io.BytesIO(b"not a valid json")
+    mock_resp.status = 200
+
+    with patch("urllib.request.urlopen", return_value=mock_resp):
+        res = client.check_health()
+        assert res["status"] == "degraded"
+        assert res["available"] is False
+        assert res["api_verified"] is False
+
+
+def test_reliefweb_check_health_timeout():
+    """Verify check_health handles socket timeout gracefully."""
+    client = ReliefWebClient(config=ReliefWebConfig(appname="ValidApp-123"))
+    with patch("urllib.request.urlopen", side_effect=socket.timeout("Timed out")):
+        res = client.check_health()
+        assert res["status"] == "degraded"
+        assert res["available"] is False
+        assert res["api_verified"] is False
+        assert "timed out" in res["message"]
+

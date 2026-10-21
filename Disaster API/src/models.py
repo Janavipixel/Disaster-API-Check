@@ -1118,5 +1118,11 @@ class UnifiedIncidentReport(BaseModel):
     data_limitations: List[str] = Field(default_factory=list, description="Explicit limitations and caveats for this incident")
     unavailable_fields: List[str] = Field(default_factory=list, description="Fields explicitly recognized as unavailable from queried feeds")
 
+    # Spatial AOI and Satellite Integration
+    bbox: Optional[List[float]] = Field(default=None, description="AOI bounding box [west, south, east, north]")
+    is_benchmark: bool = Field(default=False, description="Whether this incident has pre-verified satellite benchmark runs available")
+    benchmark_run_id: Optional[str] = Field(default=None, description="Pre-computed run identifier if available (e.g. 'kerala_2018-08-10', 'lucknow_2026-10-01')")
+
+
 
 

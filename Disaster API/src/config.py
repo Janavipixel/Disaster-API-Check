@@ -218,7 +218,7 @@ class ReliefWebConfig:
         user_agent: Optional[str] = None,
         limit: Optional[int] = None,
     ):
-        raw_appname = appname or os.getenv("RELIEFWEB_APPNAME")
+        raw_appname = appname if appname is not None else os.getenv("RELIEFWEB_APPNAME")
         self.appname = raw_appname.strip() if raw_appname else None
 
         raw_url = base_url or os.getenv(
@@ -244,6 +244,31 @@ class ReliefWebConfig:
             self.limit = int(raw_limit)
         except (ValueError, TypeError):
             self.limit = 10
+
+    def validate(self) -> None:
+        """
+        Validate that an approved appname is configured.
+        Raises ConfigurationError if missing or set to placeholder.
+        """
+        if not self.appname:
+            raise ConfigurationError(
+                "ReliefWeb appname is missing. Please set RELIEFWEB_APPNAME in your .env file "
+                "or environment variables (obtain/register an appname at https://apidoc.reliefweb.int/parameters#appname)."
+            )
+        if self.appname == "your-reliefweb-appname-here" or self.appname.startswith("your-"):
+            raise ConfigurationError(
+                "ReliefWeb appname is still set to placeholder value. "
+                "Please configure an approved appname in RELIEFWEB_APPNAME."
+            )
+
+    @property
+    def is_configured(self) -> bool:
+        """Check if an approved appname is configured without raising an exception."""
+        try:
+            self.validate()
+            return True
+        except ConfigurationError:
+            return False
 
     def __repr__(self) -> str:
         return (

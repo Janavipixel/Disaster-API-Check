@@ -453,3 +453,33 @@ def test_synthesize_incident_summary_preserves_urls_and_quotes():
     assert "https://cbsnews.com/kerala-floods" in summary or "cbsnews.com" in summary
     assert "Incident Summary" in summary
     assert "Casualty Reports" in summary
+
+
+def test_multi_word_location_matching_non_contiguous():
+    """Verify that multi-word locations match when tokens appear non-contiguously in title/content/url."""
+    event_info = parse_disaster_query("Lucknow Gomti floods October 2026")
+
+    # Item with Lucknow in title and Gomti in content (separated)
+    separated_item = SearchResult(
+        title="Gomti river floods Lucknow residential areas",
+        url="https://thehindu.com/news/national/gomti-overflow-lucknow.html",
+        content="Heavy rain caused severe flooding as the Gomti river swelled in Lucknow.",
+        score=0.91,
+        published_date="2026-10-05",
+    )
+    # Item missing one of the mandatory tokens (only Lucknow, no Gomti)
+    missing_token_item = SearchResult(
+        title="Flooding in Lucknow city streets",
+        url="https://example.com/lucknow-rain.html",
+        content="Waterlogging reported across central Lucknow following cloudburst.",
+        score=0.85,
+        published_date="2026-10-05",
+    )
+
+    retained, filtered = process_and_filter_results([separated_item, missing_token_item], event_info)
+
+    assert len(retained) == 1
+    assert retained[0].title == "Gomti river floods Lucknow residential areas"
+    assert len(filtered) == 1
+    assert "Irrelevant" in filtered[0].filter_reason
+

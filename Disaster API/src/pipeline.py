@@ -71,6 +71,7 @@ LOCATION_SYNONYMS: Dict[str, Set[str]] = {
     "syria": {"syria", "syr", "syrian", "aleppo", "damascus", "idlib"},
     "india": {"india", "ind", "bharat"},
     "kerala": {"kerala", "cochin", "kochi", "thiruvananthapuram", "wayanad", "idukki", "alappuzha", "ernakulam"},
+    "lucknow": {"lucknow", "uttar pradesh", "gomti", "up"},
     "mumbai": {"mumbai", "bombay"},
     "united states": {"united states", "usa", "us", "u.s.", "america"},
     "california": {"california", "ca"},
@@ -86,6 +87,7 @@ LOCATION_SYNONYMS: Dict[str, Set[str]] = {
 
 SUBNATIONAL_PARENTS: Dict[str, str] = {
     "kerala": "india",
+    "lucknow": "india",
     "mumbai": "india",
     "california": "united states",
 }
@@ -93,6 +95,7 @@ SUBNATIONAL_PARENTS: Dict[str, str] = {
 REGION_BOUNDING_BOXES: Dict[str, Tuple[float, float, float, float]] = {
     # (min_lat, max_lat, min_lon, max_lon)
     "kerala": (8.0, 13.0, 74.5, 77.8),
+    "lucknow": (26.75, 26.95, 80.85, 81.05),
     "mumbai": (18.8, 19.5, 72.7, 73.2),
     "california": (32.5, 42.0, -124.5, -114.0),
     "united states": (24.5, 49.5, -125.0, -66.5),
@@ -419,6 +422,29 @@ class DisasterPipeline:
             primary_coords=primary_coords,
         )
 
+        # 9. Spatial AOI Bounding Box Resolution & Benchmark Satellite Linkage
+        loc_clean = (query_info.location or "").strip().lower()
+        query_lower = cleaned_query.lower()
+        resolved_bbox = None
+        is_bm = False
+        bm_run_id = None
+
+        if "kerala" in loc_clean or "kerala" in query_lower or "cochin" in loc_clean or "kochi" in loc_clean:
+            resolved_bbox = [76.2, 9.8, 76.6, 10.2]
+            is_bm = True
+            bm_run_id = "kerala_2018-08-10"
+        elif "lucknow" in loc_clean or "lucknow" in query_lower or "gomti" in loc_clean:
+            resolved_bbox = [80.85, 26.75, 81.05, 26.95]
+            is_bm = True
+            bm_run_id = "lucknow_2026-10-01"
+        elif loc_clean in REGION_BOUNDING_BOXES:
+            min_lat, max_lat, min_lon, max_lon = REGION_BOUNDING_BOXES[loc_clean]
+            resolved_bbox = [min_lon, min_lat, max_lon, max_lat]
+        elif primary_coords is not None:
+            c_lat = primary_coords.latitude
+            c_lon = primary_coords.longitude
+            resolved_bbox = [round(c_lon - 0.2, 4), round(c_lat - 0.2, 4), round(c_lon + 0.2, 4), round(c_lat + 0.2, 4)]
+
         return UnifiedIncidentReport(
             original_query=cleaned_query,
             disaster_type=query_info.disaster_type,
@@ -438,6 +464,9 @@ class DisasterPipeline:
             source_attributions=attributions,
             data_limitations=limitations,
             unavailable_fields=unavailable,
+            bbox=resolved_bbox,
+            is_benchmark=is_bm,
+            benchmark_run_id=bm_run_id,
         )
 
     # --------------------------------------------------------------------------

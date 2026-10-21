@@ -1,0 +1,175 @@
+{
+  "config": {
+    "name": "kerala",
+    "event_date": "2018-08-10",
+    "bbox": [
+      76.2,
+      9.8,
+      76.6,
+      10.2
+    ],
+    "pre_window_days": 20,
+    "post_window_days": 20,
+    "resolution_m": 20.0,
+    "min_aoi_coverage_pct": 95.0,
+    "min_valid_pixel_pct": 90.0,
+    "orbit_direction": "DESCENDING",
+    "relative_orbit": 165,
+    "threshold_method": "adaptive_std",
+    "k_std": 1.5,
+    "min_area_m2": 2000.0,
+    "center_lon": 76.4,
+    "center_lat": 10.0,
+    "utm_epsg": 32643,
+    "run_dir": "runs\\kerala_2018-08-10",
+    "data_dir": "runs\\kerala_2018-08-10\\data",
+    "previews_dir": "runs\\kerala_2018-08-10\\previews"
+  },
+  "stage_1_catalog": {
+    "status": "COMPLETED",
+    "selected_pair": {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180809T004043_20180809T004108_023162_02842B_F9CD_COG.SAFE",
+        "datetime": "2018-08-09T00:40:43Z",
+        "coverage_pct": 100.0,
+        "gap_days": 0.97
+      },
+      "post_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180821T004044_20180821T004109_023337_0289D5_9B06_COG.SAFE",
+        "datetime": "2018-08-21T00:40:44Z",
+        "coverage_pct": 100.0,
+        "gap_days": 11.03
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_01"
+    },
+    "total_candidates": 4,
+    "candidates_file": "runs\\kerala_2018-08-10\\candidates.json"
+  },
+  "stage_2_fetch": {
+    "status": "COMPLETED",
+    "utm_epsg": 32643,
+    "utm_bounds": [
+      631442.46,
+      1083534.52,
+      675480.61,
+      1127958.77
+    ],
+    "width_px": 2202,
+    "height_px": 2221,
+    "effective_resolution_m": 20.0,
+    "pre_file": "runs\\kerala_2018-08-10\\data\\pre_2018-08-09.tif",
+    "post_file": "runs\\kerala_2018-08-10\\data\\post_2018-08-21.tif"
+  },
+  "stage_3_validate": {
+    "status": "PASSED",
+    "pre_stats": {
+      "file": "runs\\kerala_2018-08-10\\data\\pre_2018-08-09.tif",
+      "file_size_mb": 34.043,
+      "width": 2202,
+      "height": 2221,
+      "count": 2,
+      "crs": "EPSG:32643",
+      "transform": [
+        19.999159854677576,
+        0.0,
+        631442.46,
+        0.0,
+        -20.00191355245385,
+        1127958.77
+      ],
+      "bounds": [
+        631442.46,
+        1083534.52,
+        675480.61,
+        1127958.77
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 4890642,
+          "total_count": 4890642,
+          "valid_pct": 100.0,
+          "min": 9.460845831199549e-06,
+          "max": 1298.5478515625,
+          "mean": 0.21885403990745544,
+          "std": 1.1371134519577026
+        },
+        "VH": {
+          "valid_count": 4890642,
+          "total_count": 4890642,
+          "valid_pct": 100.0,
+          "min": 0.0,
+          "max": 241.943603515625,
+          "mean": 0.043016381561756134,
+          "std": 0.1985037475824356
+        }
+      }
+    },
+    "post_stats": {
+      "file": "runs\\kerala_2018-08-10\\data\\post_2018-08-21.tif",
+      "file_size_mb": 34.107,
+      "width": 2202,
+      "height": 2221,
+      "count": 2,
+      "crs": "EPSG:32643",
+      "transform": [
+        19.999159854677576,
+        0.0,
+        631442.46,
+        0.0,
+        -20.00191355245385,
+        1127958.77
+      ],
+      "bounds": [
+        631442.46,
+        1083534.52,
+        675480.61,
+        1127958.77
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 4890642,
+          "total_count": 4890642,
+          "valid_pct": 100.0,
+          "min": 0.0,
+          "max": 2729.259765625,
+          "mean": 0.24006608128547668,
+          "std": 2.1861279010772705
+        },
+        "VH": {
+          "valid_count": 4890642,
+          "total_count": 4890642,
+          "valid_pct": 100.0,
+          "min": 0.0,
+          "max": 344.96136474609375,
+          "mean": 0.04531048610806465,
+          "std": 0.2262231558561325
+        }
+      }
+    },
+    "overlap_stats": {
+      "common_valid_pixels": 4890642,
+      "total_pixels": 4890642,
+      "common_valid_pct": 100.0
+    }
+  },
+  "stage_4_process": {
+    "status": "COMPLETED",
+    "change_mask_file": "runs\\kerala_2018-08-10\\change_mask.tif",
+    "candidates_geojson": "runs\\kerala_2018-08-10\\candidates.geojson",
+    "threshold_db": -3.25,
+    "threshold_method": "Adaptive (mean - 1.5*std) clamped: -3.25 dB (mean=0.11, std=2.24)",
+    "permanent_water_pixels": 690793,
+    "candidate_polygon_count": 4360,
+    "total_candidate_area_ha": 4070.9,
+    "total_candidate_area_km2": 40.709
+  },
+  "stage_5_visualize": {
+    "status": "COMPLETED",
+    "previews_directory": "runs\\kerala_2018-08-10\\previews",
+    "summary_panel": "runs\\kerala_2018-08-10\\previews\\summary_panel.png"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "candidate_pairs": [
+    {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180809T004043_20180809T004108_023162_02842B_F9CD_COG.SAFE",
+        "datetime": "2018-08-09T00:40:43Z",
+        "coverage_pct": 100.0,
+        "gap_days": 0.97
+      },
+      "post_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180821T004044_20180821T004109_023337_0289D5_9B06_COG.SAFE",
+        "datetime": "2018-08-21T00:40:44Z",
+        "coverage_pct": 100.0,
+        "gap_days": 11.03
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_01"
+    },
+    {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180809T004043_20180809T004108_023162_02842B_F9CD_COG.SAFE",
+        "datetime": "2018-08-09T00:40:43Z",
+        "coverage_pct": 100.0,
+        "gap_days": 0.97
+      },
+      "post_scene": {
+        "id": "S1B_IW_GRDH_1SDV_20180827T004000_20180827T004029_012441_016F10_FE60_COG.SAFE",
+        "datetime": "2018-08-27T00:40:00Z",
+        "coverage_pct": 100.0,
+        "gap_days": 17.03
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 18.0,
+      "pair_id": "PAIR_02"
+    },
+    {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180728T004043_20180728T004108_022987_027EB1_53DB_COG.SAFE",
+        "datetime": "2018-07-28T00:40:43Z",
+        "coverage_pct": 100.0,
+        "gap_days": 12.97
+      },
+      "post_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180821T004044_20180821T004109_023337_0289D5_9B06_COG.SAFE",
+        "datetime": "2018-08-21T00:40:44Z",
+        "coverage_pct": 100.0,
+        "gap_days": 11.03
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 24.0,
+      "pair_id": "PAIR_03"
+    },
+    {
+      "relative_orbit": 165,
+      "orbit_direction": "DESCENDING",
+      "pre_scene": {
+        "id": "S1A_IW_GRDH_1SDV_20180728T004043_20180728T004108_022987_027EB1_53DB_COG.SAFE",
+        "datetime": "2018-07-28T00:40:43Z",
+        "coverage_pct": 100.0,
+        "gap_days": 12.97
+      },
+      "post_scene": {
+        "id": "S1B_IW_GRDH_1SDV_20180827T004000_20180827T004029_012441_016F10_FE60_COG.SAFE",
+        "datetime": "2018-08-27T00:40:00Z",
+        "coverage_pct": 100.0,
+        "gap_days": 17.03
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 30.0,
+      "pair_id": "PAIR_04"
+    }
+  ],
+  "rejected_groups": [],
+  "all_scenes": [
+    {
+      "id": "S1B_IW_GRDH_1SDV_20180827T130558_20180827T130618_012449_016F4C_CD15_COG.SAFE",
+      "datetime": "2018-08-27T13:05:58Z",
+      "orbit_direction": "ASCENDING",
+      "relative_orbit": 173,
+      "coverage_pct": 65.93
+    },
+    {
+      "id": "S1B_IW_GRDH_1SDV_20180827T130533_20180827T130558_012449_016F4C_EA17_COG.SAFE",
+      "datetime": "2018-08-27T13:05:33Z",
+      "orbit_direction": "ASCENDING",
+      "relative_orbit": 173,
+      "coverage_pct": 34.0
+    },
+    {
+      "id": "S1B_IW_GRDH_1SDV_20180827T004000_20180827T004029_012441_016F10_FE60_COG.SAFE",
+      "datetime": "2018-08-27T00:40:00Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1A_IW_GRDH_1SDV_20180821T130631_20180821T130656_023345_028A0A_919F_COG.SAFE",
+      "datetime": "2018-08-21T13:06:31Z",
+      "orbit_direction": "ASCENDING",
+      "relative_orbit": 173,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1A_IW_GRDH_1SDV_20180821T004044_20180821T004109_023337_0289D5_9B06_COG.SAFE",
+      "datetime": "2018-08-21T00:40:44Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1A_IW_GRDH_1SDV_20180809T004043_20180809T004108_023162_02842B_F9CD_COG.SAFE",
+      "datetime": "2018-08-09T00:40:43Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    },
+    {
+      "id": "S1A_IW_GRDH_1SDV_20180728T004043_20180728T004108_022987_027EB1_53DB_COG.SAFE",
+      "datetime": "2018-07-28T00:40:43Z",
+      "orbit_direction": "DESCENDING",
+      "relative_orbit": 165,
+      "coverage_pct": 100.0
+    }
+  ]
+}
