@@ -1,0 +1,130 @@
+{
+  "html_sources": [
+    {
+      "name": "Copernicus Data Space Documentation",
+      "url": "https://documentation.dataspace.copernicus.eu/",
+      "source_type": "official_documentation",
+      "publisher": "Copernicus / ESA",
+      "content_type": "technical_documentation",
+      "enabled": true,
+      "tags": ["SAR", "Sentinel-1", "satellite", "data-access"]
+    },
+    {
+      "name": "NASA Earthdata",
+      "url": "https://www.earthdata.nasa.gov/",
+      "source_type": "official_documentation",
+      "publisher": "NASA",
+      "content_type": "technical_documentation",
+      "enabled": true,
+      "tags": ["satellite", "earth-observation", "data-access"]
+    },
+    {
+      "name": "Google Earth Engine Guides",
+      "url": "https://developers.google.com/earth-engine/guides",
+      "source_type": "official_documentation",
+      "publisher": "Google",
+      "content_type": "technical_documentation",
+      "enabled": true,
+      "tags": ["GEE", "cloud-computing", "satellite", "analysis"]
+    },
+    {
+      "name": "Tavily Documentation",
+      "url": "https://docs.tavily.com/",
+      "source_type": "official_documentation",
+      "publisher": "Tavily",
+      "content_type": "technical_documentation",
+      "enabled": true,
+      "tags": ["search", "AI", "RAG"]
+    },
+    {
+      "name": "GDACS Main Page",
+      "url": "https://www.gdacs.org/",
+      "source_type": "disaster_report",
+      "publisher": "GDACS / UN OCHA",
+      "content_type": "disaster_alert",
+      "enabled": true,
+      "tags": ["disaster", "alerts", "global"]
+    },
+    {
+      "name": "ReliefWeb Disasters",
+      "url": "https://reliefweb.int/disasters",
+      "source_type": "disaster_report",
+      "publisher": "OCHA",
+      "content_type": "disaster_report",
+      "enabled": true,
+      "tags": ["disaster", "humanitarian", "reports"]
+    }
+  ],
+  "rss_sources": [
+    {
+      "name": "GDACS RSS Feed",
+      "url": "https://www.gdacs.org/xml/rss.xml",
+      "source_type": "disaster_report",
+      "publisher": "GDACS",
+      "content_type": "disaster_alert",
+      "enabled": true,
+      "tags": ["disaster", "alerts", "RSS"]
+    },
+    {
+      "name": "USGS Significant Earthquakes Atom Feed",
+      "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.atom",
+      "source_type": "disaster_report",
+      "publisher": "USGS",
+      "content_type": "disaster_alert",
+      "enabled": true,
+      "tags": ["earthquake", "USGS", "disaster", "RSS"]
+    },
+    {
+      "name": "ReliefWeb RSS",
+      "url": "https://reliefweb.int/updates/rss.xml",
+      "source_type": "disaster_report",
+      "publisher": "OCHA",
+      "content_type": "situation_report",
+      "enabled": false,
+      "notes": "ReliefWeb updates RSS currently serves Cloudflare challenge (HTTP 202 text/html). Disabled per ethical scraping policy.",
+      "tags": ["disaster", "humanitarian", "RSS"]
+    }
+  ],
+  "api_sources": [
+    {
+      "name": "ReliefWeb API v2",
+      "base_url": "https://api.reliefweb.int/v2",
+      "source_type": "disaster_report",
+      "publisher": "OCHA",
+      "content_type": "disaster_report",
+      "enabled": true,
+      "notes": "Requires an approved appname token per official docs (https://apidoc.reliefweb.int/parameters#appname). Read from RELIEFWEB_APPNAME env var.",
+      "params": {
+        "endpoint": "disasters",
+        "limit": 20,
+        "fields": ["name", "description", "date", "country", "type", "url", "primary_country"]
+      },
+      "tags": ["disaster", "API", "humanitarian"]
+    }
+  ],
+  "tavily_queries": [
+    {
+      "name": "Sentinel-1 Flood Mapping",
+      "query": "Sentinel-1 SAR flood mapping disaster response 2024",
+      "enabled": false,
+      "requires_api_key": true,
+      "tags": ["SAR", "flood", "Sentinel-1"]
+    },
+    {
+      "name": "Satellite Change Detection Disasters",
+      "query": "satellite change detection earthquake flood wildfire 2024",
+      "enabled": false,
+      "requires_api_key": true,
+      "tags": ["change-detection", "disaster"]
+    }
+  ],
+  "settings": {
+    "request_timeout_seconds": 20,
+    "max_retries": 3,
+    "retry_delay_seconds": 2,
+    "rate_limit_delay_seconds": 1.5,
+    "max_content_length_chars": 50000,
+    "min_content_length_chars": 100,
+    "user_agent": "DisasterIntelligenceBot/1.0 (Academic Research Project; contact: research@example.edu)"
+  }
+}
