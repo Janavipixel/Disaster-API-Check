@@ -84,6 +84,25 @@ export default function Header({
           </span>
         </div>
         <button
+          id="btn-return-landing"
+          type="button"
+          className="btn-back-to-landing"
+          onClick={() => {
+            if (typeof window.returnToLanding === 'function') {
+              window.returnToLanding();
+            } else {
+              window.location.hash = '';
+              window.location.reload();
+            }
+          }}
+          title="Return to Rakhshak Product Overview"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Product Overview</span>
+        </button>
+        <button
           id="btn-view-json"
           className="btn-secondary"
           onClick={onOpenJsonModal}
