@@ -53,9 +53,10 @@ export default function CopernicusStepperCard({ incident, runId, onRunUpdated, o
     setReportText('');
   }, [incident?.id, incident?.location]);
 
-  // Contextual hazard matching: only Kerala and Lucknow have Sentinel-1 flood change runs
+  // Contextual hazard matching: Kerala, Lucknow, and Nepal have Sentinel-1 SAR change runs
   const isKerala = incident?.id === 'kerala' || incident?.location?.toLowerCase()?.includes('kerala');
   const isLucknow = incident?.id === 'lucknow' || incident?.location?.toLowerCase()?.includes('lucknow');
+  const isNepal = incident?.id === 'nepal' || incident?.location?.toLowerCase()?.includes('nepal');
 
   // Determine active run ID strictly within incident context
   let activeRunId = null;
@@ -71,6 +72,12 @@ export default function CopernicusStepperCard({ incident, runId, onRunUpdated, o
       : (runId && runId.includes('lucknow'))
       ? runId
       : 'lucknow_2026-10-01';
+  } else if (isNepal) {
+    activeRunId = (selectedRunId && selectedRunId.includes('nepal'))
+      ? selectedRunId
+      : (runId && runId.includes('nepal'))
+      ? runId
+      : 'nepal_trishuli_landslide_2026-08-26';
   } else if (incident?.copernicus_run_id) {
     activeRunId = selectedRunId || runId || incident.copernicus_run_id;
   }
@@ -136,13 +143,13 @@ export default function CopernicusStepperCard({ incident, runId, onRunUpdated, o
     setActionLoading(true);
     setActionMsg('Querying CDSE STAC Catalogue API...');
     try {
-      const bbox = incident?.bbox || [76.2, 9.8, 76.6, 10.2];
-      const eventDate = isLucknow ? '2026-10-01' : '2018-08-10';
+      const bbox = incident?.bbox || (isNepal ? [85.10, 27.88, 85.56, 28.34] : isLucknow ? [80.7, 26.65, 81.15, 27.05] : [76.2, 9.8, 76.6, 10.2]);
+      const eventDate = isNepal ? '2026-08-26' : (isLucknow ? '2026-10-01' : (incident?.date || '2018-08-10'));
       const res = await searchCopernicusCatalog({
         bbox,
         event_date: eventDate,
-        pre_window_days: 15,
-        post_window_days: 15,
+        pre_window_days: isNepal ? 24 : 15,
+        post_window_days: isNepal ? 20 : 15,
       });
       setCatalogResults(res);
       setActionMsg(res.message || `Discovered ${res.total_candidates || 0} candidate scenes.`);
@@ -187,10 +194,11 @@ export default function CopernicusStepperCard({ incident, runId, onRunUpdated, o
   const progressPct = runData?.progress_pct ?? (isComplete ? 100 : 0);
   const isFreshTest = activeRunId?.includes('test');
 
-  // Filter available runs strictly for current incident context (Kerala or Lucknow)
+  // Filter available runs strictly for current incident context (Kerala, Lucknow, or Nepal)
   const relevantRuns = availableRuns.filter((r) => {
     if (isKerala) return r.run_id?.includes('kerala');
     if (isLucknow) return r.run_id?.includes('lucknow');
+    if (isNepal) return r.run_id?.includes('nepal');
     return false;
   });
 

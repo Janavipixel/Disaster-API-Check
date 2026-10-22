@@ -273,16 +273,16 @@ BENCHMARK_INCIDENTS = [
         "verified_satellites": ["Sentinel-1D SAR", "GDACS Multi-hazard", "ReliefWeb"],
     },
     {
-        "id": "turkey-2023",
-        "name": "Turkey-Syria Dual Earthquakes",
-        "query": "Kahramanmaras Turkey earthquake February 2023",
-        "location": "Kahramanmaras, Turkey",
-        "hazard": "Earthquake",
-        "event_date": "2023-02-06",
-        "bbox": [36.0, 36.5, 38.0, 38.5],
-        "copernicus_run_id": None,
-        "description": "Catastrophic Mw 7.8 and 7.5 seismic sequence recorded by USGS seismometers and GDACS Red Alert.",
-        "verified_satellites": ["USGS Epicenter (Mw 7.8)", "GDACS Red Alert", "ReliefWeb SitRep"],
+        "id": "nepal-2026",
+        "name": "Nepal Trishuli Landslide & River Debris Flow",
+        "query": "Nepal Trishuli landslide August 2026",
+        "location": "Trishuli Basin, Rasuwa, Nepal",
+        "hazard": "Landslide",
+        "event_date": "2026-08-26",
+        "bbox": [85.10, 27.88, 85.56, 28.34],
+        "copernicus_run_id": "nepal_trishuli_landslide_2026-08-26",
+        "description": "High-altitude monsoon landslide and debris flow along the Bhote Kosi - Trishuli river corridor across Rasuwa, Nuwakot, and Dhading.",
+        "verified_satellites": ["Sentinel-1 SAR (VV/VH)", "GDACS Multi-hazard", "ReliefWeb Reports"],
     },
     {
         "id": "california-2020",
@@ -374,6 +374,7 @@ def list_runs() -> List[Dict[str, Any]]:
 
 
 @app.get("/api/copernicus/status/{run_id}", summary="Get Detailed Status & Progression of a Run")
+@app.get("/api/copernicus/runs/{run_id}", summary="Get Detailed Status & Progression of a Run (Alias)")
 def get_run_status_endpoint(run_id: str) -> Dict[str, Any]:
     """
     Retrieve real-time progression for stages 1 through 5, scene IDs,

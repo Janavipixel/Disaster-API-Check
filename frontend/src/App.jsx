@@ -8,6 +8,7 @@ import SatelliteComparisonCard from './components/SatelliteComparisonCard.jsx';
 import CopernicusStepperCard from './components/CopernicusStepperCard.jsx';
 import GroundTruthNotice from './components/GroundTruthNotice.jsx';
 import JsonModal from './components/JsonModal.jsx';
+import DisasterApiMonitor from './components/DisasterApiMonitor.jsx';
 import { MOCK_INCIDENTS } from './data/mockIncidents.js';
 import {
   checkHealth,
@@ -17,8 +18,8 @@ import {
 } from './services/api.js';
 import { mergeWithSampleBaseline } from './utils/mergeBaseline.js';
 
-
 export default function App() {
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'disaster_api'
   const [currentIncidentKey, setCurrentIncidentKey] = useState('kerala');
   const [currentIncident, setCurrentIncident] = useState(MOCK_INCIDENTS['kerala']);
   const [copernicusRun, setCopernicusRun] = useState(null);
@@ -106,12 +107,10 @@ export default function App() {
         }
       } catch (err) {
         console.warn(`Preset live fetch failed for ${key}, using cached fallback:`, err);
-        // Fallback already set above
       } finally {
         setIsLoading(false);
       }
     } else if (preset?.satellite_layers?.run_id) {
-      // Try fetching run status even if disaster query wasn't run
       try {
         const runSt = await getCopernicusRunStatus(preset.satellite_layers.run_id);
         if (runSt) setCopernicusRun(runSt);
@@ -134,13 +133,13 @@ export default function App() {
     if (isLive) {
       try {
         const liveData = await queryDisaster(q, { limit: 10 });
-        
+
         // Match key if present in presets
         const qLower = q.toLowerCase();
         let matchedKey = '';
         if (qLower.includes('kerala')) matchedKey = 'kerala';
         else if (qLower.includes('lucknow') || qLower.includes('gomti')) matchedKey = 'lucknow';
-        else if (qLower.includes('turkey') || qLower.includes('türkiye') || qLower.includes('earthquake')) matchedKey = 'turkey';
+        else if (qLower.includes('nepal') || qLower.includes('trishuli') || qLower.includes('landslide')) matchedKey = 'nepal';
         else if (qLower.includes('camp') || qLower.includes('california') || qLower.includes('fire')) matchedKey = 'california';
 
         const baseMock = matchedKey && MOCK_INCIDENTS[matchedKey] ? MOCK_INCIDENTS[matchedKey] : null;
@@ -177,7 +176,7 @@ export default function App() {
     let matchedKey = null;
     if (qLower.includes('kerala')) matchedKey = 'kerala';
     else if (qLower.includes('lucknow') || qLower.includes('gomti')) matchedKey = 'lucknow';
-    else if (qLower.includes('turkey') || qLower.includes('türkiye') || qLower.includes('earthquake')) matchedKey = 'turkey';
+    else if (qLower.includes('nepal') || qLower.includes('trishuli') || qLower.includes('landslide')) matchedKey = 'nepal';
     else if (qLower.includes('camp') || qLower.includes('california') || qLower.includes('fire')) matchedKey = 'california';
 
     if (matchedKey && MOCK_INCIDENTS[matchedKey]) {
@@ -210,12 +209,48 @@ export default function App() {
     setRecenterTrigger((prev) => prev + 1);
   };
 
+  // Callback when user tests query in DisasterApiMonitor and clicks "View on Geospatial Map"
+  const handleApplyFromMonitor = async (apiReport) => {
+    if (!apiReport) return;
+    const q = apiReport.original_query || '';
+    setQuery(q);
+
+    const qLower = q.toLowerCase();
+    let matchedKey = '';
+    if (qLower.includes('kerala')) matchedKey = 'kerala';
+    else if (qLower.includes('lucknow') || qLower.includes('gomti')) matchedKey = 'lucknow';
+    else if (qLower.includes('nepal') || qLower.includes('trishuli') || qLower.includes('landslide')) matchedKey = 'nepal';
+    else if (qLower.includes('camp') || qLower.includes('california') || qLower.includes('fire')) matchedKey = 'california';
+
+    const baseMock = matchedKey && MOCK_INCIDENTS[matchedKey] ? MOCK_INCIDENTS[matchedKey] : null;
+    const fullIncident = {
+      ...mergeWithSampleBaseline(baseMock, apiReport),
+      id: matchedKey || 'custom-incident',
+    };
+
+    setCurrentIncidentKey(matchedKey);
+    setCurrentIncident(fullIncident);
+
+    const runId = apiReport.benchmark_run_id || fullIncident.satellite_layers?.run_id;
+    if (runId) {
+      try {
+        const runSt = await getCopernicusRunStatus(runId);
+        if (runSt) setCopernicusRun(runSt);
+      } catch (e) {
+        // Safe ignore
+      }
+    }
+  };
+
   return (
     <>
       <Header
-        onOpenJsonModal={() => setIsJsonModalOpen(true)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onOpenJsonModal={() => setIsJsonModalOpen(false || true)}
         isLive={isLive}
         cdseStatus={cdseStatus}
+        isFetching={isLoading}
       />
 
       <main className="app-container">
@@ -225,41 +260,54 @@ export default function App() {
           </div>
         )}
 
-        {/* Search & Preset Selection Bar */}
-        <QueryCard
-          query={query}
-          onQueryChange={setQuery}
-          onAnalyze={handleAnalyze}
-          currentIncidentId={currentIncidentKey}
-          onSelectPreset={handleSelectPreset}
-          isLoading={isLoading}
-        />
-
-        {/* HERO FOCUS: Disaster Geospatial Satellite Map (Full-Width Horizontal Slab) */}
-        <MapCard incident={currentIncident} recenterTrigger={recenterTrigger} />
-
-        {/* LOWER WORKSPACE: Two-Column Intelligence & Analytics */}
-        <section className="workspace-grid">
-          {/* COLUMN 1: Incident Grounding & Feeds Navigation (Left) */}
-          <div className="column-stack">
-            <IncidentHeaderCard incident={currentIncident} onRecenter={handleRecenter} />
-            <FeedsCard incident={currentIncident} />
-          </div>
-
-          {/* COLUMN 2: Multi-Temporal Satellite Analytics & Copernicus Stepper (Right) */}
-          <div className="column-stack">
-            <SatelliteComparisonCard
-              incident={currentIncident}
-              copernicusRun={copernicusRun}
+        {/* TAB 1: DISASTER INTELLIGENCE PLATFORM DASHBOARD */}
+        {activeTab === 'dashboard' && (
+          <>
+            {/* Search & Preset Selection Bar */}
+            <QueryCard
+              query={query}
+              onQueryChange={setQuery}
+              onAnalyze={handleAnalyze}
+              currentIncidentId={currentIncidentKey}
+              onSelectPreset={handleSelectPreset}
+              isLoading={isLoading}
             />
-            <CopernicusStepperCard
-              incident={currentIncident}
-              runId={copernicusRun?.run_id}
-              onRunUpdated={(updated) => setCopernicusRun(updated)}
-            />
-            <GroundTruthNotice />
-          </div>
-        </section>
+
+            {/* HERO FOCUS: Disaster Geospatial Satellite Map (Full-Width Horizontal Slab) */}
+            <MapCard incident={currentIncident} recenterTrigger={recenterTrigger} />
+
+            {/* LOWER WORKSPACE: Two-Column Intelligence & Analytics */}
+            <section className="workspace-grid">
+              {/* COLUMN 1: Incident Grounding & Feeds Navigation (Left) */}
+              <div className="column-stack">
+                <IncidentHeaderCard incident={currentIncident} onRecenter={handleRecenter} />
+                <FeedsCard incident={currentIncident} />
+              </div>
+
+              {/* COLUMN 2: Multi-Temporal Satellite Analytics & Copernicus Stepper (Right) */}
+              <div className="column-stack">
+                <SatelliteComparisonCard
+                  incident={currentIncident}
+                  copernicusRun={copernicusRun}
+                />
+                <CopernicusStepperCard
+                  incident={currentIncident}
+                  runId={copernicusRun?.run_id}
+                  onRunUpdated={(updated) => setCopernicusRun(updated)}
+                />
+                <GroundTruthNotice />
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* TAB 2: DISASTER API LIVE DIAGNOSTICS & MONITOR */}
+        {activeTab === 'disaster_api' && (
+          <DisasterApiMonitor
+            onSwitchToDashboard={() => setActiveTab('dashboard')}
+            onApplyIncidentToDashboard={handleApplyFromMonitor}
+          />
+        )}
       </main>
 
       {/* Raw JSON Inspection Modal */}

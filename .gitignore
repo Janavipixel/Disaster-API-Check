@@ -1,29 +1,94 @@
-# Environment files and credentials
+# ==============================================================================
+# Bhumi / Rakhshak Platform - Comprehensive Production .gitignore
+# ==============================================================================
+
+# 1. Environment files and secrets (NEVER commit credentials)
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
 
-# Python cache and bytecode
+# 2. Virtual environments
+.venv/
+.venv_test/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 3. Python cache, bytecode, and test coverage
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.mypy_cache/
+.ruff_cache/
 
-# Node and frontend build artifacts
-node_modules/
+# 4. Python packaging and build artifacts
+build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Temporary test runs and isolated test configs
+# 5. Node, Vite, and Frontend build artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+.vite/
+*.local
+
+# 6. Vercel deployment cache
+.vercel/
+
+# 7. Fetchengine temporary runs and massive satellite archives
+# (Sentinel-1 raw SAFE archives and temporary zips can exceed 2GB)
+fetchengine/runs/**/*.zip
+fetchengine/runs/**/*.SAFE/
+fetchengine/runs/**/*.tif
+fetchengine/runs/**/*.tiff
 fetchengine/runs/*test*/
 fetchengine/config_test.yaml
 
-# IDE and OS files
+# 8. Logs and debug dumps
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.tmp
+
+# 9. IDE, editor, and operating system artifacts
 .vscode/
+!.vscode/extensions.json
 .idea/
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
-*.log
-*.tmp
+desktop.ini
+.directory

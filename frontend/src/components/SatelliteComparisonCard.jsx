@@ -1,15 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 export default function SatelliteComparisonCard({ incident, copernicusRun }) {
   const [splitPos, setSplitPos] = useState(50);
   const [activeTab, setActiveTab] = useState('slider'); // 'slider' | 'gallery'
   const [selectedOverlay, setSelectedOverlay] = useState('post'); // 'post' | 'mask' | 'delta'
   const [lightboxImage, setLightboxImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalView, setModalView] = useState('swipe'); // 'swipe' | 'post' | 'pre' | 'mask' | 'delta'
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (isModalOpen) setIsModalOpen(false);
+        if (lightboxImage) setLightboxImage(null);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isModalOpen, lightboxImage]);
+
+  const isDragging = useRef(false);
+
+  const updateSplitFromPointer = useCallback((clientX, rect) => {
+    const pct = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+    setSplitPos(Math.round(pct * 10) / 10);
+  }, []);
+
+  const handleDragStart = useCallback((e) => {
+    isDragging.current = true;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+    const rect = e.currentTarget.getBoundingClientRect();
+    updateSplitFromPointer(e.clientX, rect);
+  }, [updateSplitFromPointer]);
+
+  const handleDragMove = useCallback((e) => {
+    if (!isDragging.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    updateSplitFromPointer(e.clientX, rect);
+  }, [updateSplitFromPointer]);
+
+  const handleDragEnd = useCallback((e) => {
+    if (isDragging.current) {
+      isDragging.current = false;
+      try {
+        if (e.currentTarget?.hasPointerCapture(e.pointerId)) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      } catch (_) {}
+    }
+  }, []);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setSplitPos((prev) => Math.max(0, Math.round((prev - 2) * 10) / 10));
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      setSplitPos((prev) => Math.min(100, Math.round((prev + 2) * 10) / 10));
+    }
+  }, []);
 
   const layers = incident?.satellite_layers;
-  const isFloodIncident = incident?.id === 'kerala' || incident?.id === 'lucknow' || incident?.disaster_type === 'floods';
+  const isNepal = incident?.id === 'nepal' || incident?.location?.toLowerCase()?.includes('nepal');
+  const isFloodIncident = incident?.id === 'kerala' || incident?.id === 'lucknow' || incident?.disaster_type === 'floods' || isNepal || incident?.disaster_type === 'landslide';
 
-  // Derive valid flood run ID strictly within current incident context
+  // Derive valid SAR run ID strictly within current incident context
   let runId = null;
   if (incident?.id === 'kerala') {
     runId = (copernicusRun?.run_id && copernicusRun.run_id.includes('kerala'))
@@ -23,13 +80,19 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
       : (layers?.run_id && layers.run_id.includes('lucknow'))
       ? layers.run_id
       : 'lucknow_2026-10-01';
-  } else if (isFloodIncident && incident?.copernicus_run_id) {
+  } else if (isNepal) {
+    runId = (copernicusRun?.run_id && copernicusRun.run_id.includes('nepal'))
+      ? copernicusRun.run_id
+      : (layers?.run_id && layers.run_id.includes('nepal'))
+      ? layers.run_id
+      : 'nepal_trishuli_landslide_2026-08-26';
+  } else if (incident?.copernicus_run_id) {
     runId = (copernicusRun?.run_id && copernicusRun.run_id === incident.copernicus_run_id)
       ? copernicusRun.run_id
       : incident.copernicus_run_id;
   }
 
-  // If this incident does not have a valid Copernicus flood SAR run (e.g. Turkey earthquake or California wildfire)
+  // If this incident does not have a valid Copernicus SAR run (e.g. non-SAR hazard)
   if (!runId) {
     const isEarthquake = incident?.disaster_type === 'earthquake';
     const isWildfire = incident?.disaster_type === 'wildfire';
@@ -103,7 +166,7 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
                 Genuinely Available Seismic Telemetry (USGS & GDACS)
               </span>
               <span style={{ fontSize: '0.7rem', color: '#60a5fa' }}>
-                GLIDE: {incident?.glide || 'EQ-2023-000015-TUR'}
+                GLIDE: {incident?.glide || 'N/A'}
               </span>
             </div>
 
@@ -301,10 +364,10 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
           }}
         >
           <span style={{ fontSize: '0.74rem', color: '#93c5fd' }}>
-            🛰️ Full Sentinel-1 SAR change rasters and flood area calculations are available for flood incidents.
+            🛰️ Full Sentinel-1 SAR change rasters and area calculations are available for active SAR runs.
           </span>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
-            Switch to <strong>Kerala Floods</strong> or <strong>Lucknow Gomti</strong> in the preset bar above.
+            Switch to <strong>Nepal Landslide</strong>, <strong>Kerala Floods</strong>, or <strong>Lucknow Gomti</strong> in the preset bar above.
           </span>
         </div>
       </article>
@@ -387,23 +450,45 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
           </span>
         </div>
 
-        {/* Tab Toggle: Split View vs All 6 Images */}
-        <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-input)', padding: '3px', borderRadius: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Tab Toggle: Split View vs All 6 Images */}
+          <div className="card-tab-group" role="tablist">
+            <button
+              type="button"
+              className={`card-tab-btn ${activeTab === 'slider' ? 'active' : ''}`}
+              onClick={() => setActiveTab('slider')}
+              role="tab"
+              aria-selected={activeTab === 'slider'}
+            >
+              Split Slider
+            </button>
+            <button
+              type="button"
+              className={`card-tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
+              onClick={() => setActiveTab('gallery')}
+              role="tab"
+              aria-selected={activeTab === 'gallery'}
+            >
+              All Generated Rasters ({galleryItems.length})
+            </button>
+          </div>
+
+          {/* Fullscreen Modal Inspection Trigger Button */}
           <button
             type="button"
-            className={`preset-chip ${activeTab === 'slider' ? 'active' : ''}`}
-            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
-            onClick={() => setActiveTab('slider')}
+            className="card-action-btn"
+            onClick={() => {
+              setModalView('swipe');
+              setIsModalOpen(true);
+            }}
+            title="Open Fullscreen Lightbox Modal (Esc to close)"
+            aria-label="Open Fullscreen Modal"
+            id="btn-open-comparison-modal"
           >
-            Split Slider
-          </button>
-          <button
-            type="button"
-            className={`preset-chip ${activeTab === 'gallery' ? 'active' : ''}`}
-            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
-            onClick={() => setActiveTab('gallery')}
-          >
-            All Generated Rasters ({galleryItems.length})
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+            </svg>
+            <span>Fullscreen</span>
           </button>
         </div>
       </div>
@@ -411,29 +496,26 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
       {activeTab === 'slider' ? (
         <>
           {/* Sub-selectors for right layer */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.74rem' }}>
-            <span style={{ color: 'var(--text-tertiary)' }}>Compare Baseline against:</span>
-            <div style={{ display: 'flex', gap: '6px' }}>
+          <div className="slider-control-bar">
+            <span className="control-section-label">COMPARE BASELINE AGAINST</span>
+            <div className="segmented-control" role="group" aria-label="Comparison Overlay Layer">
               <button
                 type="button"
-                className={`preset-chip ${selectedOverlay === 'post' ? 'active' : ''}`}
-                style={{ padding: '2px 8px', fontSize: '0.7rem' }}
+                className={`segmented-control-btn ${selectedOverlay === 'post' ? 'active' : ''}`}
                 onClick={() => setSelectedOverlay('post')}
               >
                 Post-Event SAR
               </button>
               <button
                 type="button"
-                className={`preset-chip ${selectedOverlay === 'mask' ? 'active' : ''}`}
-                style={{ padding: '2px 8px', fontSize: '0.7rem' }}
+                className={`segmented-control-btn ${selectedOverlay === 'mask' ? 'active' : ''}`}
                 onClick={() => setSelectedOverlay('mask')}
               >
                 Flood Change Mask
               </button>
               <button
                 type="button"
-                className={`preset-chip ${selectedOverlay === 'delta' ? 'active' : ''}`}
-                style={{ padding: '2px 8px', fontSize: '0.7rem' }}
+                className={`segmented-control-btn ${selectedOverlay === 'delta' ? 'active' : ''}`}
                 onClick={() => setSelectedOverlay('delta')}
               >
                 Delta dB
@@ -442,29 +524,85 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
           </div>
 
           {/* Swipe Comparison Container */}
-          <div className="split-box" id="split-viewer">
+          <div
+            className="split-box"
+            id="split-viewer"
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            role="region"
+            aria-label="Satellite Before-and-After Swipe Comparison"
+          >
+            {/* Quick Floating Modal Button on Viewer */}
+            <button
+              type="button"
+              className="split-floating-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setModalView('swipe');
+                setIsModalOpen(true);
+              }}
+              title="Open High-Res Modal Inspector"
+              aria-label="Open Fullscreen Modal"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+              </svg>
+            </button>
+
+            {/* Pre-Disaster Baseline sits behind (contain so never cropped) */}
             <div
               className="split-layer layer-pre"
               id="layer-pre"
-              style={{ backgroundImage: `url('${preImg}')` }}
+              style={{
+                backgroundImage: `url('${preImg}')`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+              }}
             >
-              <span className="badge-tag badge-pre" id="tag-pre-label">Pre-Disaster Baseline (VV dB)</span>
+              <span className="badge-tag badge-pre" id="tag-pre-label">Pre-Disaster Baseline</span>
             </div>
 
+            {/* Post-Disaster / Change Layer sits on top, clipped via clipPath */}
             <div
               className="split-layer layer-post"
               id="layer-post"
-              style={{ backgroundImage: `url('${rightImg}')`, width: `${splitPos}%` }}
+              style={{
+                backgroundImage: `url('${rightImg}')`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                clipPath: `inset(0 ${100 - splitPos}% 0 0)`,
+                WebkitClipPath: `inset(0 ${100 - splitPos}% 0 0)`,
+              }}
             >
               <span className="badge-tag badge-post" id="tag-post-label">{rightLabel}</span>
             </div>
 
+            {/* Glowing Divider Line */}
+            <div
+              className="split-divider-line"
+              style={{ left: `${splitPos}%` }}
+              aria-hidden="true"
+            />
+
+            {/* Draggable Handle */}
             <div
               className="split-slider-handle"
               id="slider-handle"
               style={{ left: `${splitPos}%` }}
+              aria-hidden="true"
             >
-              ↔
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </div>
 
             <input
@@ -476,6 +614,7 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
               className="split-range-input"
               id="split-slider"
               aria-label="Satellite comparison slider"
+              tabIndex={-1}
             />
           </div>
 
@@ -492,54 +631,243 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
         </>
       ) : (
         /* All Generated Rasters Gallery */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginTop: '8px' }}>
+        <div className="gallery-grid">
           {galleryItems.map((item) => (
             <div
               key={item.id}
-              style={{
-                background: '#07090e',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
+              className="gallery-card"
               onClick={() => setLightboxImage(item)}
             >
-              <div style={{ position: 'relative', width: '100%', height: '140px', background: '#000000' }}>
+              <div className="gallery-image-wrapper">
                 <img
                   src={item.url}
                   alt={item.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="gallery-thumb-img"
                   loading="lazy"
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '6px',
-                    right: '6px',
-                    background: 'rgba(0, 0, 0, 0.75)',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    fontSize: '0.65rem',
-                    color: '#38bdf8',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
-                  }}
-                >
+                <span className="gallery-tag-pill">
                   {item.tag}
                 </span>
               </div>
-              <div style={{ padding: '8px 10px' }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#f8fafc', marginBottom: '2px' }}>
+              <div className="gallery-card-body">
+                <div className="gallery-card-title">
                   {item.title}
                 </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)', lineHeight: '1.3' }}>
+                <div className="gallery-card-desc">
                   {item.desc}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* High-Res Comparison Modal Inspector (like Lightbox Modal in Image 2) */}
+      {isModalOpen && (
+        <div
+          className="modal-overlay open"
+          style={{ zIndex: 3000 }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="modal-box"
+            style={{ maxWidth: '1060px', width: '95vw', maxHeight: '92vh', display: 'flex', flexDirection: 'column' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span className="modal-title">Sentinel-1 SAR Comparison & Change Intelligence</span>
+                <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
+                  [{runId || incident?.id || 'Active SAR Run'}]
+                </span>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setIsModalOpen(false)}
+                title="Close (Esc)"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Controls Bar */}
+            <div className="modal-control-bar">
+              <div className="modal-tab-group" role="tablist">
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalView === 'swipe' ? 'active' : ''}`}
+                  onClick={() => setModalView('swipe')}
+                >
+                  ↔ Interactive Split Swipe
+                </button>
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalView === 'post' ? 'active' : ''}`}
+                  onClick={() => setModalView('post')}
+                >
+                  2. Post-Event SAR
+                </button>
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalView === 'pre' ? 'active' : ''}`}
+                  onClick={() => setModalView('pre')}
+                >
+                  1. Pre-Event Baseline
+                </button>
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalView === 'mask' ? 'active' : ''}`}
+                  onClick={() => setModalView('mask')}
+                >
+                  4. Flood Change Mask
+                </button>
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalView === 'delta' ? 'active' : ''}`}
+                  onClick={() => setModalView('delta')}
+                >
+                  3. Delta dB
+                </button>
+              </div>
+
+              {modalView === 'swipe' && (
+                <div className="segmented-control" role="group" aria-label="Modal Comparison Overlay Layer">
+                  <button
+                    type="button"
+                    className={`segmented-control-btn ${selectedOverlay === 'post' ? 'active' : ''}`}
+                    onClick={() => setSelectedOverlay('post')}
+                  >
+                    Post-Event SAR
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-control-btn ${selectedOverlay === 'mask' ? 'active' : ''}`}
+                    onClick={() => setSelectedOverlay('mask')}
+                  >
+                    Flood Change Mask
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-control-btn ${selectedOverlay === 'delta' ? 'active' : ''}`}
+                    onClick={() => setSelectedOverlay('delta')}
+                  >
+                    Delta dB
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-body" style={{ flex: 1, padding: '16px', background: '#000000', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              {modalView === 'swipe' ? (
+                <div
+                  className="split-box"
+                  onPointerDown={handleDragStart}
+                  onPointerMove={handleDragMove}
+                  onPointerUp={handleDragEnd}
+                  onPointerCancel={handleDragEnd}
+                  onKeyDown={handleKeyDown}
+                  tabIndex={0}
+                  style={{ width: '100%', height: '62vh', maxHeight: '660px', position: 'relative' }}
+                >
+                  {/* Pre Layer */}
+                  <div
+                    className="split-layer layer-pre"
+                    style={{ backgroundImage: `url('${preImg}')`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }}
+                  >
+                    <span className="badge-tag badge-pre">Pre-Disaster Baseline</span>
+                  </div>
+
+                  {/* Post Layer */}
+                  <div
+                    className="split-layer layer-post"
+                    style={{
+                      backgroundImage: `url('${rightImg}')`,
+                      backgroundSize: 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      clipPath: `inset(0 ${100 - splitPos}% 0 0)`,
+                      WebkitClipPath: `inset(0 ${100 - splitPos}% 0 0)`,
+                    }}
+                  >
+                    <span className="badge-tag badge-post">{rightLabel}</span>
+                  </div>
+
+                  {/* Glowing Divider Line */}
+                  <div
+                    className="split-divider-line"
+                    style={{ left: `${splitPos}%` }}
+                    aria-hidden="true"
+                  />
+
+                  {/* Draggable Handle */}
+                  <div
+                    className="split-slider-handle"
+                    style={{ left: `${splitPos}%` }}
+                    aria-hidden="true"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={splitPos}
+                    onChange={(e) => setSplitPos(Number(e.target.value))}
+                    className="split-range-input"
+                    aria-label="Satellite comparison slider"
+                    tabIndex={-1}
+                  />
+                </div>
+              ) : (
+                /* Single Image View — identical to Image 2 lightbox! */
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <img
+                    src={
+                      modalView === 'post' ? postImg :
+                      modalView === 'pre' ? preImg :
+                      modalView === 'mask' ? maskImg :
+                      deltaImg
+                    }
+                    alt="Satellite Observation"
+                    style={{ maxWidth: '100%', maxHeight: '60vh', objectFit: 'contain', borderRadius: '4px', background: '#000000' }}
+                  />
+                  <p style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    {modalView === 'post' ? 'Acquired during or immediately following peak precipitation and flood crest.' :
+                     modalView === 'pre' ? 'Radiometrically calibrated sigma0 backscatter (VV dB) prior to disaster impact.' :
+                     modalView === 'mask' ? 'Vector flood polygons mapped on satellite SAR with permanent water excluded.' :
+                     'Pixel-wise difference (post - pre) in decibels highlighting standing water absorption.'}
+                  </p>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', fontFamily: 'monospace', marginTop: '4px' }}>
+                    HTTP Endpoint: {
+                      modalView === 'post' ? postImg :
+                      modalView === 'pre' ? preImg :
+                      modalView === 'mask' ? maskImg :
+                      deltaImg
+                    }
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer" style={{ padding: '12px 20px', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem', color: 'var(--text-tertiary)' }}>
+              <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>
+                {copernicusRun?.stages?.process?.flooded_area_km2
+                  ? `Detected Inundation: ~${copernicusRun.stages.process.flooded_area_km2} km² (${copernicusRun.stages.process.flooded_area_ha} ha)`
+                  : 'Inundation Cluster Mask Verified'}
+              </span>
+              <span>
+                {copernicusRun?.stages?.process?.threshold_method || 'Adaptive dB Log Ratio'}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 

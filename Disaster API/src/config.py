@@ -10,9 +10,10 @@ from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
-# Automatically load .env file from the project root (one level up from src)
+# Automatically load .env file from the project root and workspace root
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=False)
+load_dotenv(dotenv_path=PROJECT_ROOT.parent / ".env", override=False)
 
 
 class ConfigurationError(Exception):

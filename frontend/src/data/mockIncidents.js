@@ -87,8 +87,7 @@ export const MOCK_INCIDENTS = {
     tavily: {
       queried: true,
       status: "success",
-      article_count: 5,
-      synthesized_summary: "In August 2018, the Indian state of Kerala experienced its worst flooding in nearly a century due to unusually heavy monsoon rainfall (estimated 164% above normal). Torrential downpours filled 35 of the state's major reservoirs to capacity, forcing unprecedented dam water releases that inundated coastal and riverine settlements.",
+      synthesized_summary: "Incident Summary: Kerala was impacted by a major floods event during August 2018. - Trigger Timeline: Primary disaster event triggered on August 15, 2018. [Source: mei.edu (https://mei.edu/publication/dark-clouds-silver-lining-kerala-floods-gulf-responses-and-more-lessons)] - Meteorological Intensity: Peak rainfall recorded at 41% higher in 24 hours. [Source: peoplesdispatch.org (https://peoplesdispatch.org/2018/10/17/disaster-response-indias-kerala-leads-the-way)] - Meteorological Intensity: Peak rainfall recorded at 164% higher in 24 hours. [Source: peoplesdispatch.org (https://peoplesdispatch.org/2018/10/17/disaster-response-indias-kerala-leads-the-way)] - Casualty Reports: Discrepancy among reporting stages (Casualty figures vary between 26 and 400 across reporting outlets.). Early operational dispatches reported lower counts, while post-disaster reviews documented higher cumulative mortality. * Excerpt: \"more than 350 killed\" [Source: cbsnews.com (https://www.cbsnews.com/news/kerala-historic-floods-india-rescue-efforts-continue-hundreds-killed-2018-08-19)] * Excerpt: \"At least 26 killed\" [Source: bbc.com (https://www.bbc.com/news/world-asia-india-58940880)] - Civilian Displacement: Civilian displacement reported: 800,000 displaced. [Source: pbs.org (https://www.pbs.org/newshour/world/thousands-await-rescue-amid-deadly-south-indian-floods)] - Economic Loss Assessment: Severe financial losses reported across sources ($3 billion). [Source: pbs.org (https://www.pbs.org/newshour/world/thousands-await-rescue-amid-deadly-south-indian-floods)]",
       verified_claims: [
         {
           topic: "Rainfall Measurement",
@@ -246,79 +245,55 @@ export const MOCK_INCIDENTS = {
     }
   },
 
-  "turkey": {
-    id: "turkey",
-    original_query: "Turkey earthquake February 6 2023",
-    disaster_type: "earthquake",
-    hazard_icon: "🌋",
-    location: "Kahramanmaraş / Gaziantep, Türkiye",
-    incident_date_str: "February 6, 2023",
-    query_window_start: "2023-02-06",
-    query_window_end: "2023-02-08",
-    severity_level: "Red",
-    severity_score: 3.0,
-    glide: "EQ-2023-000015-TUR",
+  "nepal": {
+    id: "nepal",
+    original_query: "Nepal Trishuli landslide August 2026",
+    disaster_type: "landslide",
+    hazard_icon: "⛰️",
+    location: "Trishuli Basin, Rasuwa / Nuwakot, Nepal",
+    incident_date_str: "August 26, 2026",
+    query_window_start: "2026-08-02",
+    query_window_end: "2026-09-15",
+    severity_level: "Orange",
+    severity_score: 2.5,
+    glide: "LS-2026-000188-NPL",
     primary_coordinates: {
-      latitude: 37.2256,
-      longitude: 37.0143,
-      depth_km: 10.0,
-      source: "USGS Earthquake Catalog (Pazarcik earthquake, Kahramanmaras sequence)",
-      coordinate_type: "epicenter",
-      coordinate_label: "USGS Earthquake Epicenter",
-      disclaimer: "Point epicenter does NOT represent the full fault rupture zone (~300 km) or surface shake footprint."
+      latitude: 28.11,
+      longitude: 85.33,
+      depth_km: null,
+      source: "Sentinel-1 SAR Radar & GDACS Centroid (Trishuli Runout Corridor)",
+      coordinate_type: "centroid",
+      coordinate_label: "Trishuli Landslide Corridor Centroid",
+      disclaimer: "Centroid indicates valley midpoint; debris flow and inundation runout span 46 km along the river corridor."
     },
-    bbox: [36.2, 36.5, 38.5, 38.6],
-    sources_queried: ["USGS Earthquake Catalog", "GDACS Disaster Alerts", "ReliefWeb Humanitarian Reports", "Tavily Web Intelligence"],
-    sources_succeeded: ["USGS Earthquake Catalog", "GDACS Disaster Alerts", "ReliefWeb Humanitarian Reports", "Tavily Web Intelligence"],
+    bbox: [85.10, 27.88, 85.56, 28.34],
+    sources_queried: ["Sentinel-1 SAR (CDSE)", "GDACS Disaster Alerts", "ReliefWeb Humanitarian Reports", "Tavily Web Intelligence"],
+    sources_succeeded: ["Sentinel-1 SAR (CDSE)", "GDACS Disaster Alerts", "ReliefWeb Humanitarian Reports", "Tavily Web Intelligence"],
     sources_failed: {},
     usgs: {
-      queried: true,
-      status: "success",
-      matched_events: [
-        {
-          event_id: "us6000jllz",
-          magnitude: 7.8,
-          magnitude_type: "mww",
-          place: "Pazarcik earthquake, Kahramanmaras sequence",
-          origin_time: "2023-02-06T01:17:34.342Z",
-          coordinates: { lat: 37.2256, lon: 37.0143, depth_km: 10.0 },
-          alert_level: "red",
-          mmi: 9.1,
-          felt_reports: 2845,
-          significance: 2280,
-          catalog_url: "https://earthquake.usgs.gov/earthquakes/eventpage/us6000jllz"
-        },
-        {
-          event_id: "us6000jlqa",
-          magnitude: 7.5,
-          magnitude_type: "mww",
-          place: "Elbistan earthquake, Kahramanmaras sequence",
-          origin_time: "2023-02-06T10:24:48.811Z",
-          coordinates: { lat: 38.0106, lon: 37.1962, depth_km: 7.4 },
-          alert_level: "red",
-          mmi: 8.8,
-          catalog_url: "https://earthquake.usgs.gov/earthquakes/eventpage/us6000jlqa"
-        }
-      ]
+      queried: false,
+      status: "not_applicable",
+      matched_events: [],
+      error_message: "USGS Earthquake Catalog specialized for seismic rupture; skipped."
     },
     gdacs: {
       queried: true,
       status: "success",
-      alert_level: "Red",
-      alert_score: 3.0,
+      alert_level: "Orange",
+      alert_score: 2.2,
       matched_events: [
         {
-          event_id: "1357372",
-          episode_id: "1487096",
-          name: "Earthquake in Türkiye (M7.8)",
-          glide: "EQ-2023-000015-TUR",
-          alert_level: "Red",
-          alert_score: 3.0,
-          duration: "2023-02-06 01:17 UTC",
-          centroid: { lat: 37.1736, lon: 37.0320 },
-          severity_text: "Catastrophic East Anatolian Fault rupture",
-          affected_population: "13.5M in Turkey, 8.8M in Syria",
-          report_url: "https://www.gdacs.org/report.aspx?eventid=1357372"
+          event_id: "1684920",
+          episode_id: "1720491",
+          name: "Landslide and Debris Flow in Central Nepal (Trishuli Basin)",
+          glide: "LS-2026-000188-NPL",
+          alert_level: "Orange",
+          alert_score: 2.2,
+          duration: "2026-08-26 06:30 UTC",
+          centroid: { lat: 28.11, lon: 85.33 },
+          severity_text: "Monsoon rainfall triggering slope failures and temporary river damming along Bhote Kosi",
+          affected_population: "145,000 residents across Rasuwa, Nuwakot, and Dhading districts",
+          report_url: "https://www.gdacs.org/report.aspx?eventid=1684920"
         }
       ]
     },
@@ -327,12 +302,12 @@ export const MOCK_INCIDENTS = {
       status: "success",
       matched_reports: [
         {
-          id: "3935293",
-          title: "Türkiye / Syria: Earthquake Flash Appeal (February 2023)",
-          source: "UN OCHA",
-          published_date: "2023-02-14",
-          url: "https://reliefweb.int/report/turkiye/turkiye-2023-earthquakes-situation-report-no-1",
-          summary: "Flash appeal launching $1 billion in emergency assistance for 5.2 million affected people across 11 provinces."
+          id: "4198204",
+          title: "Nepal: Monsoon Landslides and Flash Floods Situation Report No. 4 (August 2026)",
+          source: "UN OCHA Nepal / Red Cross",
+          published_date: "2026-08-29",
+          url: "https://reliefweb.int/report/nepal/nepal-monsoon-landslides-and-flash-floods-situation-report-no-4-august-2026",
+          summary: "Torrential monsoon rains caused critical roadblocks and riverbank inundation along the Trishuli River corridor. Humanitarian aid mobilized for displaced mountain communities."
         }
       ]
     },
@@ -340,47 +315,51 @@ export const MOCK_INCIDENTS = {
       queried: false,
       status: "not_applicable",
       matched_detections: [],
-      error_message: "NASA FIRMS is specialized for thermal anomalies; skipped."
+      error_message: "NASA FIRMS specialized for thermal fire anomalies; not applicable to landslide debris."
     },
     tavily: {
       queried: true,
       status: "success",
-      article_count: 6,
-      synthesized_summary: "On 6 February 2023, two ultra-destructive earthquakes with moment magnitudes of 7.8 and 7.5 struck southern and central Turkey and northern Syria. The seismic sequence ruptured segments of the East Anatolian Fault and Çardak Fault, causing massive structural collapse across Gaziantep, Hatay, Kahramanmaraş, and Aleppo.",
+      article_count: 5,
+      synthesized_summary: "In late August 2026, prolonged monsoon downpours triggered catastrophic slope failures and debris flows across the Bhote Kosi and Trishuli river basins in Rasuwa, Nuwakot, and Dhading districts of central Nepal. The debris flow caused structural damage along the Pasang Lhamu Highway, blocked tributary channels, and inundated low-lying settlements with silt-laden runoff.",
       verified_claims: [
         {
-          topic: "Magnitude and Fault Rupture",
-          claim: "Primary M7.8 rupture followed 9 hours later by M7.5 doublet.",
+          topic: "Geographic Corridor",
+          claim: "Debris flow runout mapped along 46 km corridor from Bhote Kosi into Trishuli river valley.",
           status: "corroborated",
           sources: [
-            { domain: "usgs.gov", quote: "M 7.8 Pazarcik earthquake" },
-            { domain: "reuters.com", quote: "a second quake measuring 7.5 hit the region nine hours later" }
+            { domain: "kathmandupost.com", quote: "landslides blocked the Trishuli corridor at multiple points" },
+            { domain: "reliefweb.int", quote: "severe mudslides reported along Pasang Lhamu Highway in Rasuwa" }
           ],
-          explanation: "Validated by global seismic network telemetry and official Turkish AFAD recordings."
+          explanation: "Corroborated by local geological surveys and Sentinel-1 radar change detection."
         },
         {
-          topic: "Casualty Toll",
-          claim: "Combined death toll surpassed 53,000 in Turkey and 5,900 in Syria.",
+          topic: "Satellite Detection",
+          claim: "Sentinel-1 SAR identified 18.60 km² of debris inundation and scarred riverbed surfaces.",
           status: "corroborated",
           sources: [
-            { domain: "apnews.com", quote: "official death toll in Turkey reached over 50,000" },
-            { domain: "reliefweb.int", quote: "combined fatalities exceeding 59,000 across Turkey and Syria" }
+            { domain: "copernicus.eu", quote: "Sentinel-1 backscatter drop over flooded alluvial banks" },
+            { domain: "gdacs.org", quote: "Orange alert status for Trishuli river basin landslide impact" }
           ],
-          explanation: "Corroborated by UN OCHA and Turkish Ministry of Interior confirmations."
+          explanation: "Verified via CDSE Sentinel-1 Relative Orbit 85 differential interferometry."
         }
       ]
     },
     satellite_layers: {
-      sensor: "Sentinel-1 InSAR Coherence & Optical Sentinel-2",
-      orbit: "Relative Orbit 14 (Ascending)",
-      pre_event_date: "2023-01-28",
-      post_event_date: "2023-02-09",
-      detected_inundation_area_km2: null,
-      change_metric: "Surface Rupture Offset up to 7.2 meters; InSAR Coherence Loss",
-      pre_preview_url: null,
-      post_preview_url: null,
-      run_id: null,
-      status: "not_applicable"
+      sensor: "Copernicus Sentinel-1 SAR (VV/VH Dual-Pol)",
+      orbit: "Relative Orbit 85 (Ascending)",
+      pre_event_date: "2026-08-16",
+      post_event_date: "2026-08-28",
+      detected_inundation_area_km2: 18.60,
+      change_metric: "Debris Runout & Silt Inundation (-3.74 dB Adaptive Cutoff, 8,638 clusters)",
+      pre_preview_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/pre_vv_db.png",
+      post_preview_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/post_vv_db.png",
+      delta_preview_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/delta_vv_db.png",
+      mask_preview_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/change_mask_overlay.png",
+      histogram_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/delta_vv_histogram.png",
+      summary_url: "/api/copernicus/runs/nepal_trishuli_landslide_2026-08-26/images/summary_panel.png",
+      run_id: "nepal_trishuli_landslide_2026-08-26",
+      status: "completed"
     }
   },
 
