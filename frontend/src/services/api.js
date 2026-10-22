@@ -33,13 +33,25 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 25000) {
 }
 
 /**
+ * Safely parse JSON from a response, protecting against HTML SPA rewrites or edge error pages.
+ */
+async function safeJson(res) {
+  if (!res) return null;
+  const contentType = res.headers?.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('Received non-JSON response from server (possible HTML rewrite).');
+  }
+  return await res.json();
+}
+
+/**
  * 1. Health & Subsystem Reachability Check
  */
 export async function checkHealth() {
   try {
     const res = await fetchWithTimeout(`${BASE_URL}/api/health`, {}, 5000);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    return await safeJson(res);
   } catch (err) {
     return {
       status: 'offline',
@@ -71,11 +83,12 @@ export async function queryDisaster(queryText, options = {}) {
     });
 
     if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.detail || `Server returned HTTP ${res.status}`);
+      const errData = await safeJson(res).catch(() => ({}));
+      throw new Error(errData?.detail || `Server returned HTTP ${res.status}`);
     }
 
-    const data = await res.json();
+    const data = await safeJson(res);
+    if (!data) throw new Error('Invalid JSON response from server.');
     return {
       ...data,
       is_live: true,
@@ -89,12 +102,14 @@ export async function queryDisaster(queryText, options = {}) {
         method: 'GET',
       });
       if (getRes.ok) {
-        const getData = await getRes.json();
-        return {
-          ...getData,
-          is_live: true,
-          provenance: 'LIVE_API_GET',
-        };
+        const getData = await safeJson(getRes);
+        if (getData) {
+          return {
+            ...getData,
+            is_live: true,
+            provenance: 'LIVE_API_GET',
+          };
+        }
       }
     } catch (fallbackErr) {
       // Intentionally fall through
@@ -109,8 +124,8 @@ export async function queryDisaster(queryText, options = {}) {
 export async function getBenchmarkIncidents() {
   try {
     const res = await fetchWithTimeout(`${BASE_URL}/api/disaster/incidents`, {}, 8000);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    if (!res.ok) return null;
+    return await safeJson(res);
   } catch (err) {
     return null;
   }
@@ -121,9 +136,10 @@ export async function getBenchmarkIncidents() {
  */
 export async function getBenchmarkIncident(incidentId) {
   try {
-    const res = await fetchWithTimeout(`${BASE_URL}/api/disaster/incidents/${incidentId}`, {}, 15000);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const res = await fetchWithTimeout(`${BASE_URL}/api/disaster/incidents/${incidentId}`, {}, 10000);
+    if (!res.ok) return null;
+    const data = await safeJson(res);
+    if (!data) return null;
     return {
       ...data,
       is_live: true,
@@ -144,10 +160,10 @@ export async function searchCopernicusCatalog(searchParams) {
   });
 
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.detail || `Catalog search failed (HTTP ${res.status})`);
+    const errData = await safeJson(res).catch(() => ({}));
+    throw new Error(errData?.detail || `Catalog search failed (HTTP ${res.status})`);
   }
-  return await res.json();
+  return await safeJson(res);
 }
 
 /**
@@ -160,22 +176,23 @@ export async function triggerCopernicusFetch(fetchParams) {
   });
 
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.detail || `Pipeline trigger failed (HTTP ${res.status})`);
+    const errData = await safeJson(res).catch(() => ({}));
+    throw new Error(errData?.detail || `Pipeline trigger failed (HTTP ${res.status})`);
   }
-  return await res.json();
+  return await safeJson(res);
 }
 
 /**
  * 7. Retrieve Live Stage Progression & Output Images
  */
 export async function getCopernicusRunStatus(runId) {
-  const res = await fetchWithTimeout(`${BASE_URL}/api/copernicus/status/${runId}`, {}, 10000);
-  if (!res.ok) {
-    if (res.status === 404) return null;
-    throw new Error(`Failed to load run status (HTTP ${res.status})`);
+  try {
+    const res = await fetchWithTimeout(`${BASE_URL}/api/copernicus/status/${runId}`, {}, 8000);
+    if (!res.ok) return null;
+    return await safeJson(res);
+  } catch (err) {
+    return null;
   }
-  return await res.json();
 }
 
 /**
@@ -184,8 +201,9 @@ export async function getCopernicusRunStatus(runId) {
 export async function listCopernicusRuns() {
   try {
     const res = await fetchWithTimeout(`${BASE_URL}/api/copernicus/runs`, {}, 6000);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    if (!res.ok) return [];
+    const data = await safeJson(res);
+    return Array.isArray(data) ? data : [];
   } catch (err) {
     return [];
   }
@@ -198,7 +216,9 @@ export async function getCopernicusReport(runId) {
   try {
     const res = await fetchWithTimeout(`${BASE_URL}/api/copernicus/runs/${runId}/report`, {}, 8000);
     if (!res.ok) return null;
-    return await res.text();
+    const text = await res.text();
+    if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) return null;
+    return text;
   } catch (err) {
     return null;
   }

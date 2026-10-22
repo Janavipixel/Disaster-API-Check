@@ -76,6 +76,8 @@ export default function App() {
     return () => { isMounted = false; };
   }, []);
 
+  const presetReqIdRef = useRef(0);
+
   // Preset Selection Handler
   const handleSelectPreset = async (key) => {
     setCurrentIncidentKey(key);
@@ -90,30 +92,36 @@ export default function App() {
       }
     }
 
+    const currentReq = ++presetReqIdRef.current;
+
     // If backend is live, execute query through the real API
     if (isLive && preset) {
       setIsLoading(true);
       try {
         const liveData = await queryDisaster(preset.original_query, { limit: 10 });
+        if (presetReqIdRef.current !== currentReq) return;
+
         const merged = mergeWithSampleBaseline(preset, liveData);
         setCurrentIncident(merged);
 
         const targetRunId = liveData.benchmark_run_id || preset.satellite_layers?.run_id;
         if (targetRunId) {
           const runSt = await getCopernicusRunStatus(targetRunId);
-          if (runSt) setCopernicusRun(runSt);
+          if (presetReqIdRef.current === currentReq && runSt) setCopernicusRun(runSt);
         } else {
           setCopernicusRun(null);
         }
       } catch (err) {
         console.warn(`Preset live fetch failed for ${key}, using cached fallback:`, err);
       } finally {
-        setIsLoading(false);
+        if (presetReqIdRef.current === currentReq) {
+          setIsLoading(false);
+        }
       }
     } else if (preset?.satellite_layers?.run_id) {
       try {
         const runSt = await getCopernicusRunStatus(preset.satellite_layers.run_id);
-        if (runSt) setCopernicusRun(runSt);
+        if (presetReqIdRef.current === currentReq && runSt) setCopernicusRun(runSt);
       } catch (e) {
         // Safe ignore
       }
@@ -289,11 +297,13 @@ export default function App() {
                 <SatelliteComparisonCard
                   incident={currentIncident}
                   copernicusRun={copernicusRun}
+                  onSelectPreset={handleSelectPreset}
                 />
                 <CopernicusStepperCard
                   incident={currentIncident}
                   runId={copernicusRun?.run_id}
                   onRunUpdated={(updated) => setCopernicusRun(updated)}
+                  onSelectPreset={handleSelectPreset}
                 />
                 <GroundTruthNotice />
               </div>

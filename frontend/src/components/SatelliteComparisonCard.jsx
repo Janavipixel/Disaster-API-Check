@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 
-export default function SatelliteComparisonCard({ incident, copernicusRun }) {
+export default function SatelliteComparisonCard({ incident, copernicusRun, onSelectPreset }) {
   const [splitPos, setSplitPos] = useState(50);
   const [activeTab, setActiveTab] = useState('slider'); // 'slider' | 'gallery'
   const [selectedOverlay, setSelectedOverlay] = useState('post'); // 'post' | 'mask' | 'delta'
@@ -351,24 +351,52 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
         {/* Guided Navigation to Flood Scenarios */}
         <div
           style={{
-            marginTop: '10px',
-            padding: '10px 14px',
-            background: 'rgba(56, 189, 248, 0.04)',
-            border: '1px solid rgba(56, 189, 248, 0.15)',
-            borderRadius: '6px',
+            marginTop: '12px',
+            padding: '12px 16px',
+            background: 'rgba(56, 189, 248, 0.05)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
+            borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '8px',
+            gap: '12px',
           }}
         >
-          <span style={{ fontSize: '0.74rem', color: '#93c5fd' }}>
-            🛰️ Full Sentinel-1 SAR change rasters and area calculations are available for active SAR runs.
-          </span>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
-            Switch to <strong>Nepal Landslide</strong>, <strong>Kerala Floods</strong>, or <strong>Lucknow Gomti</strong> in the preset bar above.
-          </span>
+          <div>
+            <div style={{ fontSize: '0.78rem', color: '#93c5fd', fontWeight: 600 }}>
+              🛰️ Copernicus Sentinel-1 SAR change detection is specialized for flood inundation.
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+              Switch directly to an active SAR radar change detection scenario:
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="preset-chip"
+              onClick={() => onSelectPreset && onSelectPreset('nepal')}
+              style={{ padding: '5px 12px', fontSize: '0.74rem', cursor: 'pointer' }}
+            >
+              ⛰️ Nepal Landslide 2026
+            </button>
+            <button
+              type="button"
+              className="preset-chip"
+              onClick={() => onSelectPreset && onSelectPreset('kerala')}
+              style={{ padding: '5px 12px', fontSize: '0.74rem', cursor: 'pointer' }}
+            >
+              🌊 Kerala Floods 2018
+            </button>
+            <button
+              type="button"
+              className="preset-chip"
+              onClick={() => onSelectPreset && onSelectPreset('lucknow')}
+              style={{ padding: '5px 12px', fontSize: '0.74rem', cursor: 'pointer' }}
+            >
+              💧 Lucknow Gomti 2026
+            </button>
+          </div>
         </div>
       </article>
     );

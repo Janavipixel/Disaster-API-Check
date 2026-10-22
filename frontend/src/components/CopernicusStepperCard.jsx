@@ -15,7 +15,7 @@ const REAL_STAGES = [
   { key: 'visualize', step: 5, title: 'Visual Synthesis', label: '5. Multi-Layer Rasters' },
 ];
 
-export default function CopernicusStepperCard({ incident, runId, onRunUpdated, onSelectImage }) {
+export default function CopernicusStepperCard({ incident, runId, onRunUpdated, onSelectImage, onSelectPreset }) {
   const [runData, setRunData] = useState(null);
   const [availableRuns, setAvailableRuns] = useState([]);
   const [selectedRunId, setSelectedRunId] = useState(null);
@@ -255,6 +255,49 @@ export default function CopernicusStepperCard({ incident, runId, onRunUpdated, o
           </span>
         </div>
       </div>
+
+      {/* Quick Switch to Active SAR Runs if Non-SAR Hazard */}
+      {!activeRunId && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '14px',
+            background: 'var(--bg-input)',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}>Active SAR Runs:</span>
+          <button
+            type="button"
+            className="preset-chip"
+            onClick={() => onSelectPreset && onSelectPreset('nepal')}
+            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+          >
+            ⛰️ Nepal Landslide
+          </button>
+          <button
+            type="button"
+            className="preset-chip"
+            onClick={() => onSelectPreset && onSelectPreset('kerala')}
+            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+          >
+            🌊 Kerala Floods
+          </button>
+          <button
+            type="button"
+            className="preset-chip"
+            onClick={() => onSelectPreset && onSelectPreset('lucknow')}
+            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+          >
+            💧 Lucknow Gomti
+          </button>
+        </div>
+      )}
 
       {/* Available Run Selector Pill Bar */}
       {relevantRuns.length > 0 && (

@@ -72,7 +72,6 @@ export default function QueryCard({
             type="button"
             className={`preset-chip ${currentIncidentId === preset.key ? 'active' : ''}`}
             onClick={() => onSelectPreset(preset.key)}
-            disabled={isLoading}
           >
             {preset.label}
           </button>
