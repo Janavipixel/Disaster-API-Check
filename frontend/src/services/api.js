@@ -2,8 +2,10 @@
  * api.js: Production API client connecting Frontend to FastAPI Backend & Copernicus FetchEngine.
  * Handles timeouts, network retries, and honest online/fallback status detection.
  */
-
-const BASE_URL = '';
+// Base URL for backend API calls. In local dev, defaults to '' (proxied by Vite).
+// In production on Vercel, can be pointed directly to the live backend via VITE_API_URL.
+const rawApiUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ? import.meta.env.VITE_API_URL.trim() : '';
+const BASE_URL = rawApiUrl.replace(/\/+$/, '');
 
 /**
  * Perform a fetch request with timeout protection.

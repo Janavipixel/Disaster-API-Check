@@ -1,0 +1,25 @@
+# ==============================================================================
+# Render.com Infrastructure-as-Code Blueprint
+# Deploys the FastAPI Backend as a high-performance Web Service
+# ==============================================================================
+services:
+  - type: web
+    name: disaster-api-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: FIRMS_MAP_KEY
+        sync: false
+      - key: RELIEFWEB_APPNAME
+        sync: false
+      - key: CDSE_CLIENT_ID
+        sync: false
+      - key: CDSE_CLIENT_SECRET
+        sync: false
