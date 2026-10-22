@@ -4,6 +4,7 @@ export default function Header({
   activeTab = 'dashboard',
   onTabChange,
   onOpenJsonModal,
+  onOpenColdStartModal,
   isLive = false,
   cdseStatus = 'UNKNOWN',
   isFetching = false,
@@ -70,17 +71,20 @@ export default function Header({
         <div
           className="status-badge"
           id="system-status-indicator"
+          onClick={onOpenColdStartModal}
           style={{
             borderColor: isLive ? 'rgba(74, 222, 128, 0.3)' : 'rgba(234, 179, 8, 0.3)',
             background: isLive ? 'rgba(74, 222, 128, 0.08)' : 'rgba(234, 179, 8, 0.08)',
+            cursor: 'pointer',
           }}
+          title="Click to view Render Backend Deployment status & cold-start notice"
         >
           <span
             className="status-dot"
             style={{ background: isLive ? '#4ade80' : '#eab308' }}
           ></span>
           <span style={{ color: isLive ? '#4ade80' : '#facc15' }}>
-            {isLive ? `API CONNECTED (${cdseStatus === 'healthy' ? 'CDSE READY' : 'ONLINE'})` : 'OFFLINE BASELINE'}
+            {isLive ? `API CONNECTED (${cdseStatus === 'healthy' ? 'CDSE READY' : 'ONLINE'})` : 'OFFLINE BASELINE (RENDER)'}
           </span>
         </div>
         <button

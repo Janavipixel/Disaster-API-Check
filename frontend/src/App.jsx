@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header.jsx';
 import QueryCard from './components/QueryCard.jsx';
 import MapCard from './components/MapCard.jsx';
@@ -9,6 +9,7 @@ import CopernicusStepperCard from './components/CopernicusStepperCard.jsx';
 import GroundTruthNotice from './components/GroundTruthNotice.jsx';
 import JsonModal from './components/JsonModal.jsx';
 import DisasterApiMonitor from './components/DisasterApiMonitor.jsx';
+import RenderColdStartModal from './components/RenderColdStartModal.jsx';
 import { MOCK_INCIDENTS } from './data/mockIncidents.js';
 import {
   checkHealth,
@@ -30,6 +31,7 @@ export default function App() {
   const [cdseStatus, setCdseStatus] = useState('UNKNOWN');
   const [isLoading, setIsLoading] = useState(false);
   const [errorNotice, setErrorNotice] = useState(null);
+  const [isColdStartModalOpen, setIsColdStartModalOpen] = useState(true);
 
   // Initialize and check backend connection on mount
   useEffect(() => {
@@ -74,6 +76,17 @@ export default function App() {
 
     initializePlatform();
     return () => { isMounted = false; };
+  }, []);
+
+  // Re-open Render cold-start modal when transition from Landing to Authority occurs
+  useEffect(() => {
+    const handleAuthorityActivated = () => {
+      setIsColdStartModalOpen(true);
+    };
+    window.addEventListener('authority-view-activated', handleAuthorityActivated);
+    return () => {
+      window.removeEventListener('authority-view-activated', handleAuthorityActivated);
+    };
   }, []);
 
   const presetReqIdRef = useRef(0);
@@ -256,6 +269,7 @@ export default function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onOpenJsonModal={() => setIsJsonModalOpen(false || true)}
+        onOpenColdStartModal={() => setIsColdStartModalOpen(true)}
         isLive={isLive}
         cdseStatus={cdseStatus}
         isFetching={isLoading}
@@ -325,6 +339,13 @@ export default function App() {
         isOpen={isJsonModalOpen}
         onClose={() => setIsJsonModalOpen(false)}
         incident={currentIncident}
+      />
+
+      {/* Big Warning Modal: Render Cold Start Instance Boot Notice */}
+      <RenderColdStartModal
+        isOpen={isColdStartModalOpen}
+        onClose={() => setIsColdStartModalOpen(false)}
+        isLive={isLive}
       />
     </>
   );
