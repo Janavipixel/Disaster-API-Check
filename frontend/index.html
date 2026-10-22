@@ -1,24 +1,1081 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rakhshak // Rapid Disaster Change Intelligence</title>
-    <!-- Modern Enterprise Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakhshak — Satellite &amp; AI Disaster Intelligence</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js for Ambient 3D Orbital Sphere -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        midnight: '#050811',
+                        surface: '#0b101e',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050811;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        /* Subtle Ambient Glows */
+        .ambient-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.12), rgba(59, 130, 246, 0.05) 45%, transparent 70%);
+        }
+        /* Sleek Minimal Glassmorphism */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.25);
+            background: rgba(15, 23, 42, 0.65);
+            transform: translateY(-2px);
+        }
+        .glass-nav {
+            background: rgba(8, 13, 26, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Brand Specific Hover Glows */
+        .agency-card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .agency-card:hover {
+            transform: translateY(-4px);
+            background: rgba(15, 23, 42, 0.75);
+        }
+        .agency-nasa:hover { border-color: rgba(239, 68, 68, 0.45); box-shadow: 0 12px 35px -10px rgba(37, 99, 235, 0.35); }
+        .agency-copernicus:hover { border-color: rgba(34, 211, 238, 0.45); box-shadow: 0 12px 35px -10px rgba(34, 211, 238, 0.28); }
+        .agency-usgs:hover { border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 12px 35px -10px rgba(16, 185, 129, 0.28); }
+        .agency-un:hover { border-color: rgba(56, 189, 248, 0.45); box-shadow: 0 12px 35px -10px rgba(56, 189, 248, 0.28); }
+        .agency-gdacs:hover { border-color: rgba(245, 158, 11, 0.45); box-shadow: 0 12px 35px -10px rgba(245, 158, 11, 0.25); }
+        .agency-gee:hover { border-color: rgba(96, 165, 250, 0.45); box-shadow: 0 12px 35px -10px rgba(59, 130, 246, 0.3); }
+
+        /* Smooth Fade Transitions */
+        .fade-in {
+            animation: fadeIn 0.45s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tactical Radar Transition Animation */
+        @keyframes radarSweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .radar-sweep {
+            background: conic-gradient(from 0deg, rgba(34, 211, 238, 0.45) 0deg, rgba(59, 130, 246, 0.15) 30deg, transparent 65deg, transparent 360deg);
+            animation: radarSweep 1.6s linear infinite;
+        }
+        @keyframes radarPing {
+            0% { transform: scale(0.65); opacity: 0.95; }
+            50% { opacity: 0.45; }
+            100% { transform: scale(1.45); opacity: 0; }
+        }
+        .radar-ping-wave {
+            animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .radar-ping-wave-2 {
+            animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite 0.7s;
+        }
+        .tactical-grid-bg {
+            background-image: linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- ==================== CINEMATIC RADAR TRANSITION OVERLAY ==================== -->
+    <div id="transition-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050811]/95 backdrop-blur-2xl transition-all duration-700 opacity-0 pointer-events-none tactical-grid-bg">
+        <!-- Rotating & Pulsing Radar Grid -->
+        <div class="relative w-48 h-48 sm:w-60 sm:h-60 flex items-center justify-center mb-8">
+            <div class="radar-ping-wave absolute inset-0 rounded-full border border-cyan-400/30"></div>
+            <div class="radar-ping-wave-2 absolute inset-0 rounded-full border border-blue-500/20"></div>
+            <div class="absolute inset-4 rounded-full border border-cyan-500/20 border-dashed"></div>
+            <div class="absolute inset-10 rounded-full border border-white/10"></div>
+            <div class="absolute inset-16 rounded-full border border-cyan-400/30"></div>
+            <div class="radar-sweep absolute inset-0 rounded-full"></div>
+            <div class="absolute inset-x-0 top-1/2 h-px bg-cyan-400/20"></div>
+            <div class="absolute inset-y-0 left-1/2 w-px bg-cyan-400/20"></div>
+            
+            <div class="relative w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-2xl shadow-cyan-400/50">
+                <span class="w-3.5 h-3.5 rounded-full bg-white animate-ping"></span>
+            </div>
+        </div>
+
+        <!-- Telemetry Status Content -->
+        <div class="text-center max-w-lg px-6 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-semibold tracking-wider uppercase">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>Initializing Mission Command</span>
+            </div>
+            
+            <h3 id="transition-heading" class="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
+                Locking Copernicus Sentinel-1 Radar Orbit
+            </h3>
+
+            <!-- Cyber Progress Bar -->
+            <div class="w-full bg-slate-900/80 rounded-full h-2 overflow-hidden border border-white/10 relative shadow-inner">
+                <div id="transition-progress-bar" class="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 rounded-full w-0" style="transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+            </div>
+
+            <p id="transition-subtext" class="text-xs text-slate-400 font-mono tracking-wide min-h-[32px] flex items-center justify-center">
+                Acquiring C-Band SAR Orbit 163 Telemetry &amp; Backscatter Polarizations (VV+VH)...
+            </p>
+
+            <!-- Prominent Desktop Recommendation Badge Requested by User -->
+            <div class="pt-2">
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-300 text-xs font-semibold shadow-lg shadow-amber-500/5">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400 shrink-0">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span>Please Use Desktop View For Better Experience</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- ======================= VIEW 1: PRODUCT LANDING PAGE ================== -->
+    <!-- ======================================================================= -->
+    <div id="landing-page-wrapper" class="relative z-10 transition-opacity duration-500">
+
+        <!-- Ambient 3D Background Canvas -->
+        <div id="three-canvas-container" class="fixed inset-0 z-0 pointer-events-none opacity-85"></div>
+        <div class="fixed inset-0 z-0 pointer-events-none ambient-glow"></div>
+
+        <!-- Minimal Floating Navbar -->
+        <header class="fixed top-6 inset-x-0 z-50 px-4 sm:px-6">
+            <div class="max-w-5xl mx-auto glass-nav rounded-full px-5 py-3 flex items-center justify-between shadow-2xl shadow-black/50">
+                
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-3 text-left group focus:outline-none">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition">
+                        <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                    </div>
+                    <span class="font-display font-bold text-lg tracking-tight text-white">Rakhshak</span>
+                </a>
+
+                <!-- Clean Navigation Links -->
+                <nav id="nav-links" class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                    <a href="#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                    <a href="#about-us" class="hover:text-white transition">About Us</a>
+                    <a href="#the-product" class="hover:text-white transition">The Product</a>
+                    <a href="#ai-engine" class="hover:text-white transition">AI Engine</a>
+                    <a href="#for-who" class="hover:text-white transition">Authorities</a>
+                </nav>
+
+                <!-- Action Button -->
+                <div>
+                    <button id="nav-cta-btn" type="button" class="btn-experience-authority px-5 py-2 rounded-full bg-white text-slate-950 hover:bg-cyan-50 font-medium text-sm transition shadow-sm inline-block cursor-pointer">
+                        Experience
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main id="view-landing" class="relative z-10 block">
+
+            <!-- 1. HERO SECTION -->
+            <section class="min-h-screen flex items-center justify-center pt-28 pb-20 px-4 sm:px-6">
+                <div class="max-w-4xl mx-auto text-center space-y-8 fade-in">
+                    
+                    <!-- Pill -->
+                    <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-cyan-300 text-xs font-medium tracking-wide">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                        Copernicus Sentinel-1 SAR &amp; Verified AI Intelligence
+                    </div>
+
+                    <!-- Headline -->
+                    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+                        Clarity from Orbit.<br />
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-emerald-300">
+                            Intelligence in Seconds.
+                        </span>
+                    </h1>
+
+                    <!-- Product Description -->
+                    <p class="text-lg sm:text-xl text-slate-300/90 max-w-2xl mx-auto leading-relaxed font-light">
+                        Rakhshak unites cloud-penetrating satellite radar imagery with a source-verified AI engine—empowering disaster authorities to respond faster and helping citizens stay safe with trusted, real-time answers.
+                    </p>
+
+                    <!-- Clean CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <button id="hero-cta-btn" type="button" class="btn-experience-authority w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold text-sm shadow-lg shadow-cyan-500/20 transition transform hover:-translate-y-0.5 text-center cursor-pointer">
+                            Experience
+                        </button>
+                        <a href="#ecosystem" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-200 font-medium text-sm transition text-center">
+                            Explore the Ecosystem
+                        </a>
+                    </div>
+
+                    <!-- Scroll Indicator -->
+                    <div class="pt-12 opacity-50">
+                        <a href="#ecosystem" class="inline-flex flex-col items-center gap-2 text-xs text-slate-400 hover:text-white transition">
+                            <span>Powered by Global Space &amp; Relief Agencies</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] animate-bounce"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1.5 GLOBAL SATELLITE & INTELLIGENCE ECOSYSTEM -->
+            <section id="ecosystem" class="py-16 px-4 sm:px-6 border-t border-white/[0.06] relative">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <div class="text-center mb-12 space-y-2">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            Powered by Official Global Satellite Telemetry &amp; Humanitarian APIs
+                        </p>
+                        <p class="text-xs text-slate-500">
+                            Direct ingestion, cross-verification, and live vector indexing from six authoritative global networks
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        
+                        <!-- 1. NASA Earthdata & FIRMS -->
+                        <div class="agency-card agency-nasa rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-[#0B3D91]/25 border border-[#0B3D91]/50 flex items-center justify-center shrink-0 relative overflow-hidden group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="32" cy="32" r="26" fill="#0B3D91"/>
+                                    <circle cx="20" cy="18" r="1" fill="white"/>
+                                    <circle cx="45" cy="16" r="1.2" fill="white"/>
+                                    <circle cx="16" cy="42" r="0.9" fill="white"/>
+                                    <circle cx="44" cy="46" r="1" fill="white"/>
+                                    <circle cx="28" cy="14" r="0.8" fill="white"/>
+                                    <ellipse cx="32" cy="32" rx="23" ry="8" transform="rotate(-24 32 32)" stroke="white" stroke-width="1.3" stroke-opacity="0.85"/>
+                                    <path d="M12 40 L31 15 L36 33 L53 20 L33 44 L29 27 Z" fill="#FC3D21"/>
+                                    <text x="32" y="36" text-anchor="middle" fill="white" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="11.5" letter-spacing="1.2">NASA</text>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">NASA Earthdata</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#FC3D21]"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">FIRMS Thermal &amp; Multi-Hazard API</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-[10px] font-medium text-blue-300">
+                                    Thermal Anomalies &amp; EO Data
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 2. Copernicus / ESA Sentinel-1 -->
+                        <div class="agency-card agency-copernicus rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="32" cy="32" r="24" stroke="#003399" stroke-width="2" fill="#06152d"/>
+                                    <circle cx="34" cy="32" r="18" stroke="#22d3ee" stroke-width="2" stroke-dasharray="85 25"/>
+                                    <circle cx="30" cy="32" r="12" stroke="#38bdf8" stroke-width="1.6"/>
+                                    <circle cx="30" cy="32" r="5" fill="#22d3ee"/>
+                                    <circle cx="48" cy="20" r="2.8" fill="#facc15"/>
+                                    <path d="M44 16 L52 24" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">Copernicus / ESA</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">Sentinel-1 C-Band SAR (CDSE)</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-[10px] font-medium text-cyan-300">
+                                    Cloud-Penetrating Radar
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 3. USGS -->
+                        <div class="agency-card agency-usgs rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="6" y="12" width="52" height="40" rx="8" fill="#006F41"/>
+                                    <path d="M10 23 Q22 18 32 23 T54 21" stroke="#6ee7b7" stroke-width="1.8" fill="none" opacity="0.8"/>
+                                    <path d="M10 28 Q22 23 32 28 T54 26" stroke="#a7f3d0" stroke-width="1.4" fill="none" opacity="0.6"/>
+                                    <text x="32" y="45" text-anchor="middle" fill="white" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="14.5" letter-spacing="1">USGS</text>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">USGS</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">U.S. Geological Survey Feeds</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-400/20 text-[10px] font-medium text-emerald-300">
+                                    Seismic &amp; ShakeMap Telemetry
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 4. UN OCHA ReliefWeb -->
+                        <div class="agency-card agency-un rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="32" cy="30" r="14" stroke="#38bdf8" stroke-width="1.6"/>
+                                    <circle cx="32" cy="30" r="7" stroke="#38bdf8" stroke-width="1.2"/>
+                                    <line x1="18" y1="30" x2="46" y2="30" stroke="#38bdf8" stroke-width="1.2"/>
+                                    <line x1="32" y1="16" x2="32" y2="44" stroke="#38bdf8" stroke-width="1.2"/>
+                                    <path d="M16 42 C10 34, 12 20, 20 14" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round"/>
+                                    <path d="M48 42 C54 34, 52 20, 44 14" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round"/>
+                                    <path d="M24 48 Q32 52 40 48" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">UN OCHA ReliefWeb</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">REST API v1 &amp; Situation Reports</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-[10px] font-medium text-sky-300">
+                                    Verified Humanitarian SitReps
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 5. GDACS -->
+                        <div class="agency-card agency-gdacs rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="32" cy="32" r="22" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/>
+                                    <circle cx="32" cy="32" r="15" stroke="#fbbf24" stroke-width="1.6"/>
+                                    <path d="M32 32 L46 20 A18 18 0 0 1 50 32 Z" fill="#f59e0b" fill-opacity="0.35"/>
+                                    <circle cx="32" cy="32" r="5" fill="#ef4444"/>
+                                    <circle cx="32" cy="32" r="2" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">GDACS Global</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">UN &amp; EC Disaster Alert System</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/20 text-[10px] font-medium text-amber-300">
+                                    Orange/Red Alert Centroids
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 6. Google Earth Engine -->
+                        <div class="agency-card agency-gee rounded-3xl p-6 flex items-center gap-5 group">
+                            <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="32" cy="32" r="22" fill="#172554"/>
+                                    <path d="M12 26 C22 16, 42 16, 52 26" stroke="#4285F4" stroke-width="4" stroke-linecap="round"/>
+                                    <path d="M11 34 C24 24, 40 24, 53 34" stroke="#34A853" stroke-width="4" stroke-linecap="round"/>
+                                    <path d="M15 43 C26 35, 38 35, 49 43" stroke="#FBBC05" stroke-width="3.5" stroke-linecap="round"/>
+                                    <circle cx="44" cy="22" r="3.5" fill="#EA4335"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-bold text-white text-base truncate">Google Earth Engine</h3>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-0.5">Planetary SAR Compute &amp; Guides</p>
+                                <span class="inline-block mt-2.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-[10px] font-medium text-blue-300">
+                                    Backscatter Calibration
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ABOUT US -->
+            <section id="about-us" class="py-28 px-4 sm:px-6 border-t border-white/[0.06]">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <div class="max-w-3xl space-y-6">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">About Us</span>
+                        <h2 class="font-display text-3xl sm:text-5xl font-bold text-white leading-tight">
+                            Bridging the gap between space-borne radar and human safety.
+                        </h2>
+                        <p class="text-slate-300/90 text-base sm:text-lg leading-relaxed font-light">
+                            During severe floods, cyclones, and earthquakes, traditional optical satellites are blinded by clouds and nightfall—while social media fills with unverified panic. We built <strong class="text-white font-medium">Rakhshak</strong> ("The Protector") to turn raw orbital physics and scattered global situation reports into calm, verified clarity.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+                        <div class="glass-card rounded-3xl p-8">
+                            <div class="text-cyan-400 text-sm font-medium mb-2">01 / All-Weather Vision</div>
+                            <div class="font-display text-2xl font-bold text-white mb-2">Day, Night &amp; Cloud</div>
+                            <p class="text-sm text-slate-400 leading-relaxed">
+                                Powered by Copernicus Sentinel-1 C-Band radar that sees effortlessly through monsoon clouds, smoke, and darkness.
+                            </p>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-8">
+                            <div class="text-blue-400 text-sm font-medium mb-2">02 / Global Consensus</div>
+                            <div class="font-display text-2xl font-bold text-white mb-2">5+ Trusted Agencies</div>
+                            <p class="text-sm text-slate-400 leading-relaxed">
+                                Cross-verifies satellite detections with live feeds from UN OCHA ReliefWeb, GDACS, NASA Earthdata, and USGS.
+                            </p>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-8">
+                            <div class="text-emerald-400 text-sm font-medium mb-2">03 / Cited AI</div>
+                            <div class="font-display text-2xl font-bold text-white mb-2">100% Source-Backed</div>
+                            <p class="text-sm text-slate-400 leading-relaxed">
+                                Our Retrieval-Augmented Generation (RAG) engine answers questions in plain language with verifiable citations.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 3. ABOUT THE PRODUCT -->
+            <section id="the-product" class="py-28 px-4 sm:px-6 border-t border-white/[0.06]">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <div class="text-center max-w-2xl mx-auto mb-20 space-y-4">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-blue-400">The Product</span>
+                        <h2 class="font-display text-3xl sm:text-5xl font-bold text-white">
+                            Designed for speed, precision, and simplicity.
+                        </h2>
+                        <p class="text-slate-400 text-base sm:text-lg font-light">
+                            Everything needed to understand a developing crisis—distilled into one intuitive platform.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        
+                        <!-- Feature 1 -->
+                        <div class="glass-card rounded-3xl p-9 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center text-blue-400 text-xl">
+                                    <i class="fa-solid fa-satellite"></i>
+                                </div>
+                                <h3 class="font-display text-xl font-bold text-white">
+                                    Automated SAR Change Detection
+                                </h3>
+                                <p class="text-sm text-slate-300/80 leading-relaxed">
+                                    Rakhshak compares pre-disaster and post-disaster radar passes automatically, measuring exact flood inundation footprints and surface shifts down to 20-meter resolution.
+                                </p>
+                            </div>
+                            <div class="pt-8 mt-8 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+                                <span>Copernicus Sentinel-1</span>
+                                <span class="text-blue-400">Automated Pipeline</span>
+                            </div>
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="glass-card rounded-3xl p-9 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 text-xl">
+                                    <i class="fa-solid fa-globe"></i>
+                                </div>
+                                <h3 class="font-display text-xl font-bold text-white">
+                                    Multi-Agency Alert Fusion
+                                </h3>
+                                <p class="text-sm text-slate-300/80 leading-relaxed">
+                                    Instead of checking dozens of portals, Rakhshak unifies global disaster alerts, severity scores, and humanitarian situation reports into a single, calm visual timeline.
+                                </p>
+                            </div>
+                            <div class="pt-8 mt-8 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+                                <span>GDACS • UN ReliefWeb • NASA</span>
+                                <span class="text-cyan-400">Real-Time Sync</span>
+                            </div>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="glass-card rounded-3xl p-9 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center text-emerald-400 text-xl">
+                                    <i class="fa-solid fa-shield-heart"></i>
+                                </div>
+                                <h3 class="font-display text-xl font-bold text-white">
+                                    Offline-Resilient Architecture
+                                </h3>
+                                <p class="text-sm text-slate-300/80 leading-relaxed">
+                                    When storms knock out connectivity, Rakhshak’s local AI embeddings and cached vector database continue answering critical questions in the field without internet access.
+                                </p>
+                            </div>
+                            <div class="pt-8 mt-8 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+                                <span>Zero-Key Fallback</span>
+                                <span class="text-emerald-400">Field Ready</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 4. THE AI ENGINE -->
+            <section id="ai-engine" class="py-28 px-4 sm:px-6 border-t border-white/[0.06]">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <div class="max-w-3xl mb-12 space-y-4">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">The AI Engine</span>
+                        <h2 class="font-display text-3xl sm:text-5xl font-bold text-white leading-tight">
+                            An AI knowledge engine built on truth, not guesswork.
+                        </h2>
+                        <p class="text-slate-300/90 text-base sm:text-lg font-light leading-relaxed">
+                            Standard AI chatbots can hallucinate during emergencies. Rakhshak’s custom <strong class="text-white font-medium">Scraper + Hybrid RAG Engine</strong> continuously collects official disaster documentation, indexes it locally, and answers every question with verifiable source links.
+                        </p>
+                    </div>
+
+                    <!-- AI & Vector Stack -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+                        <!-- Google Gemini -->
+                        <div class="glass-card rounded-2xl px-4 py-3.5 flex items-center gap-3">
+                            <svg class="w-7 h-7 shrink-0" viewBox="0 0 32 32" fill="none">
+                                <path d="M16 3 C16 10.18 10.18 16 3 16 C10.18 16 16 21.82 16 29 C16 21.82 21.82 16 29 16 C21.82 16 16 10.18 16 3 Z" fill="url(#geminiGrad)"/>
+                                <defs>
+                                    <linearGradient id="geminiGrad" x1="3" y1="3" x2="29" y2="29" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#38bdf8"/>
+                                        <stop offset="0.5" stop-color="#818cf8"/>
+                                        <stop offset="1" stop-color="#c084fc"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div>
+                                <div class="text-xs font-semibold text-white">Google Gemini</div>
+                                <div class="text-[10px] text-slate-400">Cited Answer Synthesis</div>
+                            </div>
+                        </div>
+
+                        <!-- OpenAI -->
+                        <div class="glass-card rounded-2xl px-4 py-3.5 flex items-center gap-3">
+                            <svg class="w-7 h-7 shrink-0 text-emerald-400" viewBox="0 0 32 32" fill="none">
+                                <circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.8" stroke-dasharray="10 4"/>
+                                <polygon points="16,9 22,12.5 22,19.5 16,23 10,19.5 10,12.5" stroke="currentColor" stroke-width="1.6" fill="rgba(16,185,129,0.15)"/>
+                            </svg>
+                            <div>
+                                <div class="text-xs font-semibold text-white">OpenAI GPT-4o</div>
+                                <div class="text-[10px] text-slate-400">Multi-LLM Generator</div>
+                            </div>
+                        </div>
+
+                        <!-- ChromaDB -->
+                        <div class="glass-card rounded-2xl px-4 py-3.5 flex items-center gap-3">
+                            <svg class="w-7 h-7 shrink-0" viewBox="0 0 32 32" fill="none">
+                                <circle cx="13" cy="16" r="7" fill="#f97316" fill-opacity="0.85"/>
+                                <circle cx="19" cy="16" r="7" fill="#38bdf8" fill-opacity="0.85"/>
+                                <circle cx="16" cy="12" r="6" fill="#eab308" fill-opacity="0.75"/>
+                            </svg>
+                            <div>
+                                <div class="text-xs font-semibold text-white">ChromaDB</div>
+                                <div class="text-[10px] text-slate-400">Persistent Vector Store</div>
+                            </div>
+                        </div>
+
+                        <!-- MiniLM-L6-v2 -->
+                        <div class="glass-card rounded-2xl px-4 py-3.5 flex items-center gap-3">
+                            <svg class="w-7 h-7 shrink-0" viewBox="0 0 32 32" fill="none">
+                                <rect x="4" y="6" width="24" height="20" rx="6" fill="#facc15" fill-opacity="0.15" stroke="#facc15" stroke-width="1.6"/>
+                                <circle cx="12" cy="14" r="1.6" fill="#facc15"/>
+                                <circle cx="20" cy="14" r="1.6" fill="#facc15"/>
+                                <path d="M11 19 Q16 23 21 19" stroke="#facc15" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                            <div>
+                                <div class="text-xs font-semibold text-white">MiniLM-L6-v2</div>
+                                <div class="text-[10px] text-slate-400">Offline Local Embeddings</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4-Step Visual Flow -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+                        <div class="glass-card rounded-3xl p-7 relative">
+                            <span class="text-xs font-semibold text-cyan-400 block mb-3">Step 01</span>
+                            <h4 class="font-display text-lg font-bold text-white mb-2">Trusted Ingestion</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Ethically gathers live alerts and technical guides from GDACS, UN ReliefWeb API, Copernicus, NASA Earthdata, and Google Earth Engine.
+                            </p>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-7 relative">
+                            <span class="text-xs font-semibold text-blue-400 block mb-3">Step 02</span>
+                            <h4 class="font-display text-lg font-bold text-white mb-2">Smart Verification</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Cleans, validates, and deduplicates every report by content hash—filtering out noise and tagging exact regions, dates, and coordinates.
+                            </p>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-7 relative">
+                            <span class="text-xs font-semibold text-indigo-400 block mb-3">Step 03</span>
+                            <h4 class="font-display text-lg font-bold text-white mb-2">Local Vector Memory</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Embeds knowledge locally using lightweight neural transformers and stores it in a persistent ChromaDB index that runs even offline.
+                            </p>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-7 relative">
+                            <span class="text-xs font-semibold text-emerald-400 block mb-3">Step 04</span>
+                            <h4 class="font-display text-lg font-bold text-white mb-2">Cited Intelligence</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Combines semantic similarity with keyword re-scoring to generate clear, natural-language answers backed by official citations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Q&A Card -->
+                    <div class="glass-card rounded-3xl p-8 sm:p-10 border border-white/10">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.07]">
+                            <div>
+                                <h3 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-sm"></i>
+                                    Experience Rakhshak AI
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-1">Select a question below to see how our RAG engine synthesizes cited answers.</p>
+                            </div>
+                            <span class="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full self-start sm:self-auto">
+                                Verified Citations Active
+                            </span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2.5 my-6">
+                            <button onclick="selectAiPreview(0)" id="ai-pill-0" class="px-4 py-2 rounded-full text-xs font-medium transition bg-white text-slate-950 shadow">
+                                How does Rakhshak detect floods through clouds?
+                            </button>
+                            <button onclick="selectAiPreview(1)" id="ai-pill-1" class="px-4 py-2 rounded-full text-xs font-medium transition bg-white/[0.05] text-slate-300 hover:bg-white/[0.1]">
+                                What happened during the Kerala flood assessment?
+                            </button>
+                            <button onclick="selectAiPreview(2)" id="ai-pill-2" class="px-4 py-2 rounded-full text-xs font-medium transition bg-white/[0.05] text-slate-300 hover:bg-white/[0.1]">
+                                Can authorities use this when internet lines fail?
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-950/60 rounded-2xl p-6 border border-white/[0.06] space-y-4">
+                            <p id="ai-preview-answer" class="text-sm sm:text-base text-slate-200 leading-relaxed font-light"></p>
+                            <div id="ai-preview-citations" class="pt-4 border-t border-white/[0.06] flex flex-wrap items-center gap-3 text-xs text-slate-400"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. BUILT FOR AUTHORITIES & RESPONDERS -->
+            <section id="for-who" class="py-28 px-4 sm:px-6 border-t border-white/[0.06]">
+                <div class="max-w-4xl mx-auto">
+                    
+                    <div class="text-center max-w-2xl mx-auto mb-14 space-y-4">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-xs font-semibold uppercase tracking-widest text-cyan-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            Mission Command
+                        </span>
+                        <h2 class="font-display text-3xl sm:text-5xl font-bold text-white tracking-tight">
+                            Built for disaster authorities &amp; responders.
+                        </h2>
+                        <p class="text-slate-300/80 text-sm sm:text-base leading-relaxed">
+                            Equipping disaster management agencies, civil defense, and humanitarian teams with immediate satellite radar intelligence and verified situational briefings.
+                        </p>
+                    </div>
+
+                    <!-- Single Unified Authority Card -->
+                    <div class="glass-card rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-white/10 shadow-2xl">
+                        <div class="space-y-8">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <span class="inline-block px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-300 text-xs font-medium">
+                                    Authority Command Center
+                                </span>
+                                <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-satellite text-cyan-400"></i> Sentinel-1 &bull; GDACS &bull; UN ReliefWeb
+                                </span>
+                            </div>
+
+                            <div>
+                                <h3 class="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
+                                    Decisive command when every minute counts.
+                                </h3>
+                                <p class="text-slate-300/80 text-sm sm:text-base leading-relaxed mt-3 max-w-2xl">
+                                    Built for emergency operations centers and frontline response teams who need rapid, cloud-penetrating flood extent mapping, automated severity scoring, and reliable intelligence when networks go down.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center shrink-0 text-blue-400 text-xs mt-0.5">
+                                        <i class="fa-solid fa-water"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white text-xs font-semibold">Sub-meter Radar Extents</h4>
+                                        <p class="text-slate-400 text-[11px] mt-0.5">High-resolution Sentinel-1 SAR inundation and structural damage footprints.</p>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 text-cyan-400 text-xs mt-0.5">
+                                        <i class="fa-solid fa-hard-drive"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white text-xs font-semibold">Offline Neural Fallback</h4>
+                                        <p class="text-slate-400 text-[11px] mt-0.5">Local vector search with ChromaDB and all-MiniLM-L6-v2 when grid connectivity fails.</p>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center shrink-0 text-emerald-400 text-xs mt-0.5">
+                                        <i class="fa-solid fa-tower-broadcast"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white text-xs font-semibold">Authoritative Telemetry</h4>
+                                        <p class="text-slate-400 text-[11px] mt-0.5">Direct integration with Copernicus, UN OCHA ReliefWeb, and GDACS real-time alert feeds.</p>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-400/20 flex items-center justify-center shrink-0 text-purple-400 text-xs mt-0.5">
+                                        <i class="fa-solid fa-file-shield"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white text-xs font-semibold">Source-Verified Briefings</h4>
+                                        <p class="text-slate-400 text-[11px] mt-0.5">Automated situation reports with tamper-proof citations and incident severity scoring.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-2 text-xs text-slate-400">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    <span>Real-time orbital pipeline ready</span>
+                                </div>
+                                <button id="btn-experience-bottom" type="button" class="btn-experience-authority w-full sm:w-auto px-8 py-3.5 rounded-full bg-white text-slate-950 hover:bg-cyan-50 font-semibold text-sm transition shadow-lg shadow-white/10 text-center cursor-pointer">
+                                    Experience the Authority Page &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="py-12 px-4 sm:px-6 border-t border-white/[0.06] text-center sm:text-left">
+                <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                        <span class="font-display font-semibold text-slate-300">Rakhshak</span>
+                        <span>— Satellite &amp; AI Disaster Intelligence</span>
+                    </div>
+                    <div>
+                        Powered by Copernicus Sentinel-1 • UN ReliefWeb • GDACS • Hybrid AI RAG
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- ======================= VIEW 2: AUTHORITY MISSION COMMAND CONSOLE ===== -->
+    <!-- ======================================================================= -->
+    <div id="authority-app-wrapper" class="relative z-10 transition-opacity duration-500 opacity-0 pointer-events-none" style="display: none;">
+        <div id="root"></div>
+    </div>
+
+    <!-- React App Vite Module -->
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+    <!-- Interactive Scripts & Transition Logic -->
+    <script>
+        /* ------------------------------------------------------------------
+         * 1. MINIMALIST AI ENGINE INTERACTIVE PREVIEW
+         * ------------------------------------------------------------------ */
+        const aiSamples = [
+            {
+                answer: "Optical cameras cannot see through storm clouds or darkness. Rakhshak uses Copernicus Sentinel-1 Synthetic Aperture Radar (SAR), which beams active microwave pulses to the Earth's surface. Calm floodwater reflects those radar waves away from the sensor, allowing Rakhshak to map exact inundation boundaries day or night.",
+                citations: ["Source: Copernicus Sentinel-1 SAR Guide", "Source: Google Earth Engine Radar Documentation"]
+            },
+            {
+                answer: "During the August 2018 Kerala floods, Rakhshak's automated SAR pipeline analyzed descending Orbit 163 across Ernakulam and Alappuzha—detecting 40.71 km² (4,070.9 hectares) of standing floodwater and cross-verifying the impact with UN OCHA ReliefWeb and GDACS alert centroids.",
+                citations: ["Source: GDACS Alert FL-2018-000134-IND", "Source: UN OCHA ReliefWeb Situation Report"]
+            },
+            {
+                answer: "Yes. Rakhshak embeds disaster reports and technical documentation using a lightweight local neural model (all-MiniLM-L6-v2) stored inside a persistent ChromaDB vector index. Field responders can query the knowledge base completely offline when communication networks fail.",
+                citations: ["Source: Rakhshak Offline Vector Architecture", "Source: ChromaDB Local Index"]
+            }
+        ];
+
+        function selectAiPreview(idx) {
+            [0, 1, 2].forEach(i => {
+                const btn = document.getElementById(`ai-pill-${i}`);
+                if (!btn) return;
+                if (i === idx) {
+                    btn.className = 'px-4 py-2 rounded-full text-xs font-medium transition bg-white text-slate-950 shadow';
+                } else {
+                    btn.className = 'px-4 py-2 rounded-full text-xs font-medium transition bg-white/[0.05] text-slate-300 hover:bg-white/[0.1]';
+                }
+            });
+
+            const sample = aiSamples[idx];
+            const answerEl = document.getElementById('ai-preview-answer');
+            const citationsEl = document.getElementById('ai-preview-citations');
+            if (answerEl) answerEl.textContent = sample.answer;
+            if (citationsEl) {
+                citationsEl.innerHTML = sample.citations.map(c => `
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-cyan-300">
+                        <i class="fa-solid fa-link text-[10px]"></i> ${c}
+                    </span>
+                `).join('');
+            }
+        }
+
+        /* ------------------------------------------------------------------
+         * 2. AMBIENT THREE.JS ORBITAL PARTICLE GLOBE
+         * ------------------------------------------------------------------ */
+        let scene, camera, renderer, globeGroup, orbitalRing;
+        let mouseX = 0, mouseY = 0;
+
+        function initAmbientThree() {
+            const container = document.getElementById('three-canvas-container');
+            if (!container || typeof THREE === 'undefined') return;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 6.2);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            globeGroup = new THREE.Group();
+            globeGroup.position.y = -0.3;
+            scene.add(globeGroup);
+
+            // Particle Sphere
+            const sphereGeo = new THREE.SphereGeometry(2.1, 48, 48);
+            const pointsMat = new THREE.PointsMaterial({
+                color: 0x38bdf8,
+                size: 0.018,
+                transparent: true,
+                opacity: 0.42
+            });
+            const particleSphere = new THREE.Points(sphereGeo, pointsMat);
+            globeGroup.add(particleSphere);
+
+            // Core dark sphere
+            const coreGeo = new THREE.SphereGeometry(2.06, 36, 36);
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0x050811,
+                transparent: true,
+                opacity: 0.85
+            });
+            globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
+
+            // Orbital Ring
+            const ringGeo = new THREE.RingGeometry(2.65, 2.665, 128);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0x22d3ee,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.25
+            });
+            orbitalRing = new THREE.Mesh(ringGeo, ringMat);
+            orbitalRing.rotation.x = Math.PI / 2.2;
+            orbitalRing.rotation.y = -0.25;
+            globeGroup.add(orbitalRing);
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 0.35;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 0.25;
+            });
+
+            window.addEventListener('resize', () => {
+                if (!camera || !renderer) return;
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function animateAmbientThree() {
+            requestAnimationFrame(animateAmbientThree);
+            if (globeGroup) {
+                globeGroup.rotation.y += 0.0012;
+                globeGroup.rotation.x += (mouseY - globeGroup.rotation.x) * 0.03;
+                globeGroup.rotation.z += (mouseX - globeGroup.rotation.z) * 0.03;
+            }
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        /* ------------------------------------------------------------------
+         * 3. 5-SECOND CINEMATIC RADAR TRANSITION: LANDING ➔ AUTHORITY DASHBOARD
+         * ------------------------------------------------------------------ */
+        function launchAuthorityConsole(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const overlay = document.getElementById('transition-overlay');
+            const landing = document.getElementById('landing-page-wrapper');
+            const authority = document.getElementById('authority-app-wrapper');
+            const progressBar = document.getElementById('transition-progress-bar');
+            const heading = document.getElementById('transition-heading');
+            const subtext = document.getElementById('transition-subtext');
+
+            if (!overlay || !landing || !authority) return;
+
+            // Step 1: (0s) Engage Radar Overlay
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+            if (progressBar) progressBar.style.width = '15%';
+            if (heading) heading.textContent = 'Locking Copernicus Sentinel-1 Radar Orbit';
+            if (subtext) subtext.textContent = 'Acquiring C-Band SAR Orbit 163 Telemetry & Backscatter Polarizations (VV+VH)...';
+
+            // Step 2: (1.2s) Multi-Agency Sync
+            setTimeout(() => {
+                if (progressBar) progressBar.style.width = '40%';
+                if (heading) heading.textContent = 'Synchronizing Multi-Agency Alert Feeds';
+                if (subtext) subtext.textContent = 'Streaming GDACS Orange/Red Alerts, USGS ShakeMaps & UN OCHA ReliefWeb SitReps...';
+            }, 1200);
+
+            // Step 3: (2.5s) RAG Vector Engine
+            setTimeout(() => {
+                if (progressBar) progressBar.style.width = '68%';
+                if (heading) heading.textContent = 'Binding Hybrid RAG Vector Knowledge Base';
+                if (subtext) subtext.textContent = 'Mounting ChromaDB vector index & all-MiniLM-L6-v2 neural embeddings...';
+            }, 2500);
+
+            // Step 4: (3.8s) Raster Extents & Calibration
+            setTimeout(() => {
+                if (progressBar) progressBar.style.width = '90%';
+                if (heading) heading.textContent = 'Calibrating Flood Extent Rasters & SAR Split Swipe';
+                if (subtext) subtext.textContent = 'Rendering 20-meter resolution SAR change masks & cross-verifying casualty reports...';
+            }, 3800);
+
+            // Step 5: (4.7s) Ready to Engage
+            setTimeout(() => {
+                if (progressBar) progressBar.style.width = '100%';
+                if (heading) heading.textContent = 'Authority Mission Console Engaged';
+                if (subtext) subtext.textContent = 'Tactical cockpit ready • Launching authority command center...';
+            }, 4700);
+
+            // Step 6: (5.0s Exactly) Switch Viewports & Initialize App
+            setTimeout(() => {
+                // Fade out landing
+                landing.style.display = 'none';
+
+                // Reveal Authority Dashboard
+                authority.style.display = 'block';
+                window.scrollTo(0, 0);
+
+                setTimeout(() => {
+                    authority.classList.remove('opacity-0', 'pointer-events-none');
+                    authority.classList.add('opacity-100');
+
+                    // Fire resize event so Leaflet and Split-Swipe re-measure correctly
+                    window.dispatchEvent(new Event('resize'));
+                    window.dispatchEvent(new CustomEvent('authority-view-activated'));
+                    window.location.hash = '#authority';
+                }, 50);
+
+                // Step 7: Dismiss Radar Overlay
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+                    if (progressBar) progressBar.style.width = '0%';
+                }, 400);
+            }, 5000);
+        }
+
+        function returnToLanding(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const overlay = document.getElementById('transition-overlay');
+            const landing = document.getElementById('landing-page-wrapper');
+            const authority = document.getElementById('authority-app-wrapper');
+            const progressBar = document.getElementById('transition-progress-bar');
+            const heading = document.getElementById('transition-heading');
+            const subtext = document.getElementById('transition-subtext');
+
+            if (!overlay || !landing || !authority) return;
+
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+            if (heading) heading.textContent = 'Returning to Product Overview';
+            if (subtext) subtext.textContent = 'Releasing Tactical Mission Orbit...';
+            if (progressBar) progressBar.style.width = '50%';
+
+            setTimeout(() => {
+                if (progressBar) progressBar.style.width = '100%';
+                authority.style.display = 'none';
+                authority.classList.add('opacity-0', 'pointer-events-none');
+
+                landing.style.display = 'block';
+                window.scrollTo(0, 0);
+                window.location.hash = '';
+
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+                    if (progressBar) progressBar.style.width = '0%';
+                }, 300);
+            }, 450);
+        }
+
+        // Attach global handlers for React Header access
+        window.launchAuthorityConsole = launchAuthorityConsole;
+        window.returnToLanding = returnToLanding;
+
+        // Auto-initialize based on Hash or attach listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            initAmbientThree();
+            animateAmbientThree();
+            selectAiPreview(0);
+
+            // Attach listeners to all Experience buttons
+            const btns = document.querySelectorAll('.btn-experience-authority, #nav-cta-btn, #hero-cta-btn, #btn-experience-bottom');
+            btns.forEach(btn => {
+                btn.addEventListener('click', launchAuthorityConsole);
+            });
+
+            // Check if user directly opened #authority or #app
+            if (window.location.hash === '#authority' || window.location.hash === '#app') {
+                const landing = document.getElementById('landing-page-wrapper');
+                const authority = document.getElementById('authority-app-wrapper');
+                if (landing && authority) {
+                    landing.style.display = 'none';
+                    authority.style.display = 'block';
+                    authority.classList.remove('opacity-0', 'pointer-events-none');
+                    authority.classList.add('opacity-100');
+                    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+                }
+            }
+        });
+    </script>
+</body>
 </html>
