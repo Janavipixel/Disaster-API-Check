@@ -1,0 +1,32 @@
+# Ignore source control and IDE
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+# Ignore secrets and environment configs
+.env
+.env.*
+!.env.example
+
+# Ignore virtual environments and cache
+.venv*
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Ignore frontend build and dependencies (handled by Vercel)
+frontend/
+node_modules/
+dist/
+
+# Ignore local AI experimental pipeline (kept untouched)
+RAG-AI-main/
+
+# Ignore documentation and markdown logs
+*.md
+start_all.*
