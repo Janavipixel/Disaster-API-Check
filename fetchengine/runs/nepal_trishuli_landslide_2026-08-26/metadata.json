@@ -1,0 +1,173 @@
+{
+  "config": {
+    "name": "nepal_trishuli_landslide",
+    "event_date": "2026-08-26",
+    "bbox": [
+      85.1,
+      27.88,
+      85.56,
+      28.34
+    ],
+    "pre_window_days": 24,
+    "post_window_days": 20,
+    "resolution_m": 20.0,
+    "min_aoi_coverage_pct": 95.0,
+    "min_valid_pixel_pct": 85.0,
+    "threshold_method": "adaptive_std",
+    "k_std": 2.0,
+    "min_area_m2": 1000.0,
+    "center_lon": 85.33,
+    "center_lat": 28.11,
+    "utm_epsg": 32645,
+    "run_dir": "runs\\nepal_trishuli_landslide_2026-08-26",
+    "data_dir": "runs\\nepal_trishuli_landslide_2026-08-26\\data",
+    "previews_dir": "runs\\nepal_trishuli_landslide_2026-08-26\\previews"
+  },
+  "stage_1_catalog": {
+    "status": "COMPLETED",
+    "selected_pair": {
+      "relative_orbit": 85,
+      "orbit_direction": "ASCENDING",
+      "pre_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20260816T122141_20260816T122206_004151_007980_B091_COG.SAFE",
+        "datetime": "2026-08-16T12:21:41Z",
+        "coverage_pct": 100.0,
+        "gap_days": 9.48
+      },
+      "post_scene": {
+        "id": "S1D_IW_GRDH_1SDV_20260828T122141_20260828T122206_004326_007FA4_C73B_COG.SAFE",
+        "datetime": "2026-08-28T12:21:41Z",
+        "coverage_pct": 100.0,
+        "gap_days": 2.52
+      },
+      "min_coverage_pct": 100.0,
+      "total_gap_days": 12.0,
+      "pair_id": "PAIR_01"
+    },
+    "total_candidates": 6,
+    "candidates_file": "runs\\nepal_trishuli_landslide_2026-08-26\\candidates.json"
+  },
+  "stage_2_fetch": {
+    "status": "COMPLETED",
+    "utm_epsg": 32645,
+    "utm_bounds": [
+      312961.24,
+      3084742.55,
+      358854.23,
+      3136333.08
+    ],
+    "width_px": 2223,
+    "height_px": 2500,
+    "effective_resolution_m": 20.64,
+    "pre_file": "runs\\nepal_trishuli_landslide_2026-08-26\\data\\pre_2026-08-16.tif",
+    "post_file": "runs\\nepal_trishuli_landslide_2026-08-26\\data\\post_2026-08-28.tif"
+  },
+  "stage_3_validate": {
+    "status": "PASSED",
+    "pre_stats": {
+      "file": "runs\\nepal_trishuli_landslide_2026-08-26\\data\\pre_2026-08-16.tif",
+      "file_size_mb": 31.89,
+      "width": 2223,
+      "height": 2500,
+      "count": 2,
+      "crs": "EPSG:32645",
+      "transform": [
+        20.64461988304093,
+        0.0,
+        312961.24,
+        0.0,
+        -20.636212000000103,
+        3136333.08
+      ],
+      "bounds": [
+        312961.24,
+        3084742.55,
+        358854.23,
+        3136333.08
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 5557500,
+          "total_count": 5557500,
+          "valid_pct": 100.0,
+          "min": 0.00020328283426351845,
+          "max": 65.45325469970703,
+          "mean": 0.6138215661048889,
+          "std": 1.1251596212387085
+        },
+        "VH": {
+          "valid_count": 5557500,
+          "total_count": 5557500,
+          "valid_pct": 100.0,
+          "min": 3.2230218494078144e-06,
+          "max": 6.818540573120117,
+          "mean": 0.10490041971206665,
+          "std": 0.15938489139080048
+        }
+      }
+    },
+    "post_stats": {
+      "file": "runs\\nepal_trishuli_landslide_2026-08-26\\data\\post_2026-08-28.tif",
+      "file_size_mb": 31.887,
+      "width": 2223,
+      "height": 2500,
+      "count": 2,
+      "crs": "EPSG:32645",
+      "transform": [
+        20.64461988304093,
+        0.0,
+        312961.24,
+        0.0,
+        -20.636212000000103,
+        3136333.08
+      ],
+      "bounds": [
+        312961.24,
+        3084742.55,
+        358854.23,
+        3136333.08
+      ],
+      "band_stats": {
+        "VV": {
+          "valid_count": 5557500,
+          "total_count": 5557500,
+          "valid_pct": 100.0,
+          "min": 0.0004192996129859239,
+          "max": 132.08363342285156,
+          "mean": 0.629464328289032,
+          "std": 1.2290364503860474
+        },
+        "VH": {
+          "valid_count": 5557500,
+          "total_count": 5557500,
+          "valid_pct": 100.0,
+          "min": 5.139131644682493e-06,
+          "max": 14.90122127532959,
+          "mean": 0.10752616077661514,
+          "std": 0.16584454476833344
+        }
+      }
+    },
+    "overlap_stats": {
+      "common_valid_pixels": 5557500,
+      "total_pixels": 5557500,
+      "common_valid_pct": 100.0
+    }
+  },
+  "stage_4_process": {
+    "status": "COMPLETED",
+    "change_mask_file": "runs\\nepal_trishuli_landslide_2026-08-26\\change_mask.tif",
+    "candidates_geojson": "runs\\nepal_trishuli_landslide_2026-08-26\\candidates.geojson",
+    "threshold_db": -3.74,
+    "threshold_method": "Adaptive (mean - 2.0*std) clamped: -3.74 dB (mean=0.01, std=1.87)",
+    "permanent_water_pixels": 245206,
+    "candidate_polygon_count": 8638,
+    "total_candidate_area_ha": 1859.95,
+    "total_candidate_area_km2": 18.5995
+  },
+  "stage_5_visualize": {
+    "status": "COMPLETED",
+    "previews_directory": "runs\\nepal_trishuli_landslide_2026-08-26\\previews",
+    "summary_panel": "runs\\nepal_trishuli_landslide_2026-08-26\\previews\\summary_panel.png"
+  }
+}

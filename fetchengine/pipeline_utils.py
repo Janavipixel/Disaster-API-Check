@@ -12,9 +12,10 @@ import yaml
 from dotenv import load_dotenv
 from rasterio.warp import transform_bounds
 
-# Load environment variables from project .env
+# Load environment variables from project .env or workspace .env
 ENV_PATH = Path(__file__).resolve().parent / ".env"
 load_dotenv(ENV_PATH)
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 TOKEN_URL = (
     "https://identity.dataspace.copernicus.eu/"

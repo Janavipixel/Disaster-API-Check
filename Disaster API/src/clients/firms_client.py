@@ -423,13 +423,15 @@ class FIRMSClient:
 
     @staticmethod
     def _validate_day_range(day_range: int) -> int:
-        """Validates that day_range is an integer between 1 and 10."""
+        """Validates and clamps day_range between 1 and 5 (maximum permitted by NASA FIRMS Area API)."""
         try:
             val = int(day_range)
         except (ValueError, TypeError):
             raise FIRMSInvalidParameterError(f"day_range must be an integer, got: {day_range!r}")
-        if val < 1 or val > 10:
-            raise FIRMSInvalidParameterError(f"day_range ({val}) must be between 1 and 10 days.")
+        if val < 1:
+            return 1
+        if val > 5:
+            return 5
         return val
 
     @staticmethod

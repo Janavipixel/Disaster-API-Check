@@ -815,7 +815,7 @@ class DisasterPipeline:
                 d1 = datetime.fromisoformat(start_date)
                 d2 = datetime.fromisoformat(end_date)
                 diff = abs((d2 - d1).days) + 1
-                day_range = min(max(diff, 1), 10)
+                day_range = min(max(diff, 1), 5)
             except Exception:
                 day_range = 1
 

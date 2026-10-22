@@ -3,7 +3,7 @@ import React from 'react';
 const PRESETS = [
   { key: 'kerala', label: 'Kerala Floods 2018' },
   { key: 'lucknow', label: 'Lucknow Gomti Basin 2026' },
-  { key: 'turkey', label: 'Turkey Earthquake 2023' },
+  { key: 'nepal', label: 'Nepal Landslide 2026' },
   { key: 'california', label: 'Camp Fire California 2018' },
 ];
 
@@ -42,7 +42,7 @@ export default function QueryCard({
             type="text"
             id="disaster-query-input"
             className="disaster-search-input"
-            placeholder="Search or describe any disaster event (e.g. 'Kerala floods August 2018', 'Turkey earthquake February 2023')..."
+            placeholder="Search or describe any disaster event (e.g. 'Kerala floods August 2018', 'Nepal Trishuli landslide August 2026')..."
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             disabled={isLoading}
