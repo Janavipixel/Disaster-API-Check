@@ -33,9 +33,22 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/api/copernicus/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     }
   ],
   "rewrites": [
+    {
+      "source": "/copernicus/(.*)",
+      "destination": "/api/copernicus/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

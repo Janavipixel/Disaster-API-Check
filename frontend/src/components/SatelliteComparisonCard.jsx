@@ -374,13 +374,27 @@ export default function SatelliteComparisonCard({ incident, copernicusRun }) {
     );
   }
 
-  // Real backend preview URLs when runId is valid
-  const preImg = `/api/copernicus/runs/${runId}/images/pre_vv_db.png`;
-  const postImg = `/api/copernicus/runs/${runId}/images/post_vv_db.png`;
-  const maskImg = `/api/copernicus/runs/${runId}/images/change_mask_overlay.png`;
-  const deltaImg = `/api/copernicus/runs/${runId}/images/delta_vv_db.png`;
-  const histImg = `/api/copernicus/runs/${runId}/images/delta_vv_histogram.png`;
-  const summaryImg = `/api/copernicus/runs/${runId}/images/summary_panel.png`;
+  // Derive base URL for remote backend (if configured)
+  const rawApiUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ? import.meta.env.VITE_API_URL.trim() : '';
+  const apiBaseUrl = rawApiUrl.replace(/\/+$/, '');
+
+  // Helper to build robust preview URLs:
+  // In Vercel deployment, static preview assets are bundled directly in /api/copernicus/runs/...
+  // If runId is an ad-hoc live run and a remote backend is configured, prepend apiBaseUrl.
+  const resolveRunImg = (filename) => {
+    const isLiveExecution = runId?.startsWith('live_') || runId?.startsWith('custom_') || runId?.startsWith('job_');
+    if (isLiveExecution && apiBaseUrl) {
+      return `${apiBaseUrl}/api/copernicus/runs/${runId}/images/${filename}`;
+    }
+    return `/api/copernicus/runs/${runId}/images/${filename}`;
+  };
+
+  const preImg = resolveRunImg('pre_vv_db.png');
+  const postImg = resolveRunImg('post_vv_db.png');
+  const maskImg = resolveRunImg('change_mask_overlay.png');
+  const deltaImg = resolveRunImg('delta_vv_db.png');
+  const histImg = resolveRunImg('delta_vv_histogram.png');
+  const summaryImg = resolveRunImg('summary_panel.png');
 
   // Active right layer in split viewer
   const rightImg = selectedOverlay === 'mask' ? maskImg : selectedOverlay === 'delta' ? deltaImg : postImg;
