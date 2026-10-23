@@ -10,6 +10,11 @@
 **Rakhshak** unites all-weather, cloud-penetrating **Copernicus Sentinel-1 Synthetic Aperture Radar (SAR)** imagery with a source-verified AI engine and multi-agency telemetry. It enables emergency responders and disaster management authorities to rapidly assess disaster footprints (floods, landslides, wildfires, earthquakes) down to **20-meter resolution**, day or night.
 
 ---
+## Problem Statement
+
+Natural disasters such as floods, earthquakes, and cyclones can cause severe damage to infrastructure, communities, and essential services. However, identifying affected areas and assessing changes quickly remains a major challenge due to delays in ground-based assessments and the complexity of satellite image analysis.
+
+There is a need for an integrated disaster intelligence platform that combines real-time disaster data, satellite imagery, and automated change detection to identify potentially affected regions. The platform aims to help users visualize disaster events, compare pre-disaster and post-disaster satellite imagery, map detected changes, and generate actionable insights to support faster, data-driven disaster response and recovery planning.
 
 ## ⚡ Architecture & Deployment
 
